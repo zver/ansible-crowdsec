@@ -3,7 +3,7 @@
   replace:
     path: "/etc/crowdsec/config.yaml"
     regexp: 'listen_uri: 127.0.0.1:8080'
-    replace: "listen_uri: {{ crowdsec_lapi_ip }}:8080"
+    replace: "listen_uri: {{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }}"
     backup: yes  
 
 - name: Crowdsec - apt update and install postgresql 
@@ -13,12 +13,18 @@
       - postgresql
       - python3-psycopg2
     state: present
+  when:
+   - crowdsec_lapi_db is defined
+   - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - postgresql enable  and  start services
   service:
     name: postgresql
     state: started
     enabled: true
+  when:
+   - crowdsec_lapi_db is defined
+   - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - create crowdsec database
   postgresql_db:
@@ -26,6 +32,9 @@
     name: "{{ crowdsec_psql_db_name }}"
   become: true
   become_user: postgres
+  when:
+   - crowdsec_lapi_db is defined
+   - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - create crowdsec db userc
   postgresql_user:
@@ -34,6 +43,9 @@
     password: "{{ crowdsec_psql_db_password }}"
   become: true
   become_user: postgres
+  when:
+   - crowdsec_lapi_db is defined
+   - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - grant db user access to app db
   postgresql_privs:
@@ -44,6 +56,9 @@
     privs: all
   become: true
   become_user: postgres
+  when:
+   - crowdsec_lapi_db is defined
+   - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - /etc/crowdsec/config.yaml template for lapi server
   template:
@@ -55,11 +70,11 @@
 
 - name: Crowdsec - cscli machines add cs_agents on server
   command:
-    cmd: "sudo cscli machines add {{ inventory_hostname }} -p {{ crowdsec_agent_hosts_password }} -u http://{{ crowdsec_lapi_ip }}:8080 --force"
+    cmd: "sudo cscli machines add {{ inventory_hostname }} -p {{ crowdsec_agent_hosts_password }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} --force"
 
 - name: Crowdsec - cscli machines add cs_agents
   command:
-    cmd: "sudo cscli machines add {{ item }} -p {{ crowdsec_agent_hosts_password }} -u http://{{ crowdsec_lapi_ip }}:8080 -f ~/{{ item}}_local_api_credentials.yaml --force"
+    cmd: "sudo cscli machines add {{ item }} -p {{ crowdsec_agent_hosts_password }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} -f ~/{{ item}}_local_api_credentials.yaml --force"
   loop: "{{ crowdsec_agent_hosts  }}"
 
 - name: Add Crowdsec bouncers

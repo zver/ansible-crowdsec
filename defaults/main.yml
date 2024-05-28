@@ -64,6 +64,7 @@ cs_parsers_mywhitelists_cidr: |
   - "192.168.0.0/16"
   - "10.0.0.0/8"
 
+crowdsec_lapi_port: 8080
 # LAPI server in host vars...
 # enable_crowdsec: true
 # crowdsec_install_firewall_bouncer: true
@@ -77,9 +78,14 @@ cs_parsers_mywhitelists_cidr: |
 # crowdsec_agent_bouncers:
 #   - cs-firewall-bouncer-123456789
 # crowdsec_agent_hosts_password: 'VeryLongPasswordShouldBeRandomChangeme2022!'
+# crowdsec_lapi_db: mysql # Use mysql or psql
 # crowdsec_psql_db_user: crowdsec
 # crowdsec_psql_db_password: 'VeryLongPasswordPsqlChangeme2022!'
 # crowdsec_psql_db_name: crowdsec
+# crowdsec_mysql_db_user: crowdsec
+# crowdsec_mysql_db_password: 'VeryLongPasswordPsqlChangeme2024!'
+# crowdsec_mysql_db_name: crowdsec
+# crowdsec_mysql_db_host: localhost
 
 # LAPI agent in host vars...
 # enable_crowdsec: true

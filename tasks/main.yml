@@ -40,6 +40,28 @@
     - ansible_distribution_major_version == '7'
     - crowdsec_install_firewall_bouncer == true
 
+- name: Configure crowdsec-firewall-bouncer when using lapi server (1/2)
+  replace:
+    path: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
+    regexp: '^api_url:.*$'
+    replace: "api_url: http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }}"
+    backup: yes
+  notify:
+    - Restart crowdsec-firewall-bouncer
+  when:
+    - crowdsec_lapi_ip is defined
+
+- name: Configure crowdsec-firewall-bouncer when using lapi server (2/2)
+  replace:
+    path: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
+    regexp: '^api_key:.*$'
+    replace: "api_key: {{ crowdsec_agent_hosts_password }}"
+    backup: yes
+  notify:
+    - Restart crowdsec-firewall-bouncer
+  when:
+    - crowdsec_lapi_ip is defined
+
 # Update / upgrade
 - name: cscli hub update
   command:
@@ -178,5 +200,3 @@
   include_tasks: lapi_agent.yml
   when: 
     - inventory_hostname in groups["cs_agents"]
-
-  

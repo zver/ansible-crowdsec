@@ -3,7 +3,7 @@
   replace:
     path: "/etc/crowdsec/config.yaml"
     regexp: 'listen_uri: 127.0.0.1:8080'
-    replace: "listen_uri: {{ crowdsec_lapi_ip }}:8080"
+    replace: "listen_uri: {{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }}"
     backup: yes  
     
 - name: Crowdsec - local_api_credentials.yaml template for lapi server

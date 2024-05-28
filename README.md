@@ -71,6 +71,21 @@ crowdsec_agent_bouncers:
 
 So it must be done after installing the bouncer.
 
+## Use lapi server with external MySQL database
+
+This role was originally created to use local psql database for lapi server. Now you can use 
+an external MySQL database with:
+
+```
+crowdsec_lapi_db: mysql # Use mysql or psql
+crowdsec_mysql_db_user: crowdsec
+crowdsec_mysql_db_password: 'VeryLongPasswordPsqlChangeme2024!'
+crowdsec_mysql_db_name: crowdsec
+crowdsec_mysql_db_host: localhost
+```
+
+The role asumes the MySQL database is already configured and the access is granted.
+
 ## TODO
 - Test on Windows server  
 - Maby autodetect nftables/iptables and load the correct bouncer. 
