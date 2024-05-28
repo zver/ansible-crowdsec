@@ -19,6 +19,7 @@ Tested on:
         - bullseye # 11
     - name: EL
       versions:
+        - '9'   #Rocky
         - '8'   #Rocky & alma Linux og Oracle Linux
         - '7'   #Oracle Linux
 ```
@@ -53,6 +54,22 @@ variables can be host specific in group_vars/host.yml
 ansible HOST -m shell -a "sudo cscli parsers install crowdsecurity/whitelists --force"
 ansible 'group' -m shell -a "sudo cscli parsers remove crowdsecurity/whitelists --force"
 ansible 'group' -m shell -a "sudo systemctl reload crowdsec"
+
+## Add bouncers to lapi server
+
+You can get the crowdsec bouncer id from bouncers directory, i.e:
+
+```
+cat /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.id
+cs-firewall-bouncer-2715248097
+```
+
+And then add it to the lapi server list:
+
+crowdsec_agent_bouncers:
+  - cs-firewall-bouncer-2715248097
+
+So it must be done after installing the bouncer.
 
 ## TODO
 - Test on Windows server  

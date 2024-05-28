@@ -74,6 +74,8 @@ cs_parsers_mywhitelists_cidr: |
 #   - srv02.test
 #   - srv03.test
 #   - srv04.test
+# crowdsec_agent_bouncers:
+#   - cs-firewall-bouncer-123456789
 # crowdsec_agent_hosts_password: 'VeryLongPasswordShouldBeRandomChangeme2022!'
 # crowdsec_psql_db_user: crowdsec
 # crowdsec_psql_db_password: 'VeryLongPasswordPsqlChangeme2022!'
