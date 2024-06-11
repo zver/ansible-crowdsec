@@ -75,9 +75,9 @@
   changed_when: false
     
 # collections
-- name: crowdsec - install collections
+- name: crowdsec - install collections (use force to install collections with deleted scenarios)
   command:
-    cmd: "sudo cscli collections install {{ item }}"
+    cmd: "sudo cscli collections install {{ item }} --force"
   with_items: "{{ cs_collections_list }}"
   register: collections_install_result
   changed_when: "'overwrite' not in collections_install_result.stderr"
@@ -100,9 +100,9 @@
   changed_when: "'overwrite' not in scenarios_install_result.stderr"
   when: cs_scenarios_list | length > 0
 
-- name: crowdsec - remove scenarios
+- name: crowdsec - remove scenarios  (use force to delete scenarios included in collections)
   command:
-    cmd: "sudo cscli scenarios remove {{ item }}"
+    cmd: "sudo cscli scenarios remove {{ item }} --force"
   with_items: "{{ cs_scenarios_remove_list }}"
   register: scenarios_remove_result
   changed_when: "'sudo systemctl reload crowdsec' in scenarios_remove_result.stderr"
