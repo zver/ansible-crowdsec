@@ -172,6 +172,17 @@
   changed_when: "'# bash completion for' not in bash_completion_result.stdout"
   failed_when: "'Error' in bash_completion_result.stderr"
 
+- name: crowdsec - add mywhitelists.yml
+  template:
+    src: templates/whitelists.j2
+    dest: /etc/crowdsec/parsers/s02-enrich/mywhitelists.yaml
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - "'crowdsecurity/whitelists' in cs_parsers_list"
+    - cs_parsers_mywhitelists_ip|length > 0 or cs_parsers_mywhitelists_cidr|length > 0
+
 - name: Crowdsec enable  and  start services
   service:
     name: crowdsec

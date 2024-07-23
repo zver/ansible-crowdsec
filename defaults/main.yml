@@ -56,11 +56,10 @@ cs_acquis_addon: |
         type: journald"
       ---
 
-cs_parsers_mywhitelists_ip: |
-  - "142.250.74.142" # Google IPV4 as a test
-  - "2a00:1450:400f:800::200e" Google IPV6 as a test
+cs_parsers_mywhitelists_ip:
+  - "127.0.0.1" # localhost
 
-cs_parsers_mywhitelists_cidr: |
+cs_parsers_mywhitelists_cidr:
   - "192.168.0.0/16"
   - "10.0.0.0/8"
 
