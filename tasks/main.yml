@@ -60,6 +60,7 @@
     - Restart crowdsec-firewall-bouncer
   when:
     - crowdsec_lapi_ip is defined
+    - crowdsec_install_firewall_bouncer == true
 
 - name: Configure crowdsec-firewall-bouncer when using lapi server (2/2)
   replace:
@@ -71,6 +72,7 @@
     - Restart crowdsec-firewall-bouncer
   when:
     - crowdsec_lapi_ip is defined
+    - crowdsec_install_firewall_bouncer == true
 
 # Update / upgrade
 - name: cscli hub update
