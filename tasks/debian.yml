@@ -1,21 +1,29 @@
---- 
+---
 - name: Update apt and install curl gnupg apt-transport-https
-  package: 
-    update_cache: yes 
+  package:
+    update_cache: yes
     name:
-      - curl 
-      - gnupg 
+      - curl
+      - gnupg
       - apt-transport-https
       - debian-archive-keyring
+    state: present
+
+- name: Install nftables when using firewall bouncer
+  package:
+    name:
       - nftables
     state: present
+  when: crowdsec_install_firewall_bouncer|bool
 
 - name: Start nftables services
   service:
     name: nftables
     state: started
     enabled: yes
-  when: default_os_firewall == 'nftables'
+  when:
+    - default_os_firewall == 'nftables'
+    - crowdsec_install_firewall_bouncer|bool
 
 - name: Crowdsec Add GPG apt Key
   apt_key:
@@ -26,4 +34,3 @@
   apt_repository:
     repo: "deb https://packagecloud.io/crowdsec/crowdsec/{{ ansible_distribution | lower  }} {{ansible_distribution_release | lower}} main"
     state: present
-

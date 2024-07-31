@@ -1,9 +1,16 @@
 ---
+- name: Install nftables
+  dnf:
+    name: nftables
+    state: present
+  when: crowdsec_install_firewall_bouncer|bool
+
 - name: Start nftables services
   service:
     name: nftables
     state: started
     enabled: yes
+  when: crowdsec_install_firewall_bouncer|bool
 
 - name: Copy crowdsec repo file into place.
   template:
