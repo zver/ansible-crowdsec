@@ -18,4 +18,4 @@
     dest: /etc/yum.repos.d/crowdsec_crowdsec.repo
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"

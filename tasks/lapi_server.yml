@@ -4,18 +4,18 @@
     path: "/etc/crowdsec/config.yaml"
     regexp: 'listen_uri: 127.0.0.1:8080'
     replace: "listen_uri: {{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }}"
-    backup: yes  
+    backup: true
 
-- name: Crowdsec - apt update and install postgresql 
-  package: 
-    update_cache: yes 
-    name: 
+- name: Crowdsec - apt update and install postgresql
+  package:
+    update_cache: true
+    name:
       - postgresql
       - python3-psycopg2
     state: present
   when:
-   - crowdsec_lapi_db is defined
-   - crowdsec_lapi_db == "psql"
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - postgresql enable  and  start services
   service:
@@ -23,8 +23,8 @@
     state: started
     enabled: true
   when:
-   - crowdsec_lapi_db is defined
-   - crowdsec_lapi_db == "psql"
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - create crowdsec database
   postgresql_db:
@@ -33,8 +33,8 @@
   become: true
   become_user: postgres
   when:
-   - crowdsec_lapi_db is defined
-   - crowdsec_lapi_db == "psql"
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - create crowdsec db userc
   postgresql_user:
@@ -44,8 +44,8 @@
   become: true
   become_user: postgres
   when:
-   - crowdsec_lapi_db is defined
-   - crowdsec_lapi_db == "psql"
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - grant db user access to app db
   postgresql_privs:
@@ -57,16 +57,16 @@
   become: true
   become_user: postgres
   when:
-   - crowdsec_lapi_db is defined
-   - crowdsec_lapi_db == "psql"
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"
 
 - name: Crowdsec - /etc/crowdsec/config.yaml template for lapi server
   template:
     src: templates/cs_config.j2
-    dest:  /etc/crowdsec/config.yaml
+    dest: /etc/crowdsec/config.yaml
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Crowdsec - cscli machines add cs_agents on server
   command:
@@ -82,7 +82,7 @@
     cmd: "sudo cscli bouncers add {{ item }} -k {{ crowdsec_agent_hosts_password }}"
   loop: "{{ crowdsec_agent_bouncers }}"
   register: cscli_command
-  ignore_errors: yes
+  ignore_errors: true
   when:
     - crowdsec_agent_bouncers is defined
     - crowdsec_agent_bouncers|length > 0
@@ -91,10 +91,10 @@
     'unable to create bouncer: bouncer' not in cscli_command.stderr and
     'already exists' not in cscli_command.stderr
 
-- name: crowdsec  - daemon reload and restart
+- name: Crowdsec  - daemon reload and restart
   ansible.builtin.systemd:
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     name: crowdsec
 
 - name: Crowdsec - enable  and  start services
