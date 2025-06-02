@@ -17,7 +17,7 @@
     - crowdsec_lapi_db is defined
     - crowdsec_lapi_db == "psql"
 
-- name: Crowdsec - postgresql enable  and  start services
+- name: Crowdsec - postgresql enable and start services
   service:
     name: postgresql
     state: started
@@ -97,7 +97,7 @@
     daemon_reload: true
     name: crowdsec
 
-- name: Crowdsec - enable  and  start services
+- name: Crowdsec - enable and start services
   service:
     name: crowdsec
     state: started

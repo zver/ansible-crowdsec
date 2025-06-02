@@ -1,10 +1,10 @@
 ---
 - name: iptables
-  package: 
-    name: 
+  package:
+    name:
       - pygpgme
-      - yum-utils 
-      - iptables-services 
+      - yum-utils
+      - iptables-services
     state: present
     update_cache: yes
 
@@ -20,5 +20,4 @@
     dest: /etc/yum.repos.d/crowdsec_crowdsec.repo
     owner: root
     group: root
-    mode: 0644
-    
+    mode: "0644"

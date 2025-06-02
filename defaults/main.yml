@@ -1,18 +1,18 @@
 ---
 default_os_firewall: "nftables"
-crowdsec_install_firewall_bouncer: true 
+crowdsec_install_firewall_bouncer: true
 
 cs_collections_list:
   - crowdsecurity/nginx
-  - crowdsecurity/apache2 
+  - crowdsecurity/apache2
   - crowdsecurity/sshd
   - crowdsecurity/linux
   - crowdsecurity/iptables
   - crowdsecurity/http-cve
 
 cs_collections_remove_list: []
-# eg. 
-# cs_collections_remove_list: 
+# eg.
+# cs_collections_remove_list:
 #   - crowdsecurity/http-cve
 
 cs_scenarios_list:
@@ -21,7 +21,7 @@ cs_scenarios_list:
 
 cs_scenarios_remove_list: []
 # eg.
-# cs_scenarios_remove_list: 
+# cs_scenarios_remove_list:
 #   - crowdsecurity/apache_log4j2_cve-2021-44228
 
 cs_parsers_list:
@@ -30,8 +30,8 @@ cs_parsers_list:
   - crowdsecurity/whitelists
 
 cs_parsers_remove_list: []
-# eg. 
-# parsers_remove_list: 
+# eg.
+# parsers_remove_list:
 #  - crowdsecurity/whitelists
 
 cs_postoverflows_list:
@@ -39,8 +39,8 @@ cs_postoverflows_list:
   - crowdsecurity/seo-bots-whitelist
 
 cs_postoverflows_remove_list: []
-# eg. 
-# cs_postoverflows_remove_list: 
+# eg.
+# cs_postoverflows_remove_list:
 #   - crowdsecurity/seo-bots-whitelist
 
 cs_ban_duration: "duration: 4h" # PROD eg. 10m for testing
@@ -61,6 +61,7 @@ cs_parsers_mywhitelists_ip:
 
 cs_parsers_mywhitelists_cidr:
   - "192.168.0.0/16"
+  - "172.16.0.0/12"
   - "10.0.0.0/8"
 
 crowdsec_lapi_port: 8080
@@ -70,7 +71,7 @@ crowdsec_lapi_port: 8080
 # crowdsec_lapi_server: true
 # crowdsec_lapi_agent: true
 # crowdsec_lapi_ip: 192.168.56.11
-# crowdsec_agent_hosts: 
+# crowdsec_agent_hosts:
 #   - srv02.test
 #   - srv03.test
 #   - srv04.test
@@ -92,4 +93,3 @@ crowdsec_lapi_port: 8080
 # crowdsec_lapi_agent: true
 # crowdsec_lapi_ip: 192.168.56.11
 # crowdsec_agent_hosts_password: 'VeryLongPasswordShouldBeRandomChangeme2022!'
-
