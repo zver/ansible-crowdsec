@@ -171,12 +171,13 @@
     replace: "{{ cs_ban_duration }}"
     backup: yes
 
-- name: Crowdsec - add jounalctl ssh to acquis.yaml
-  blockinfile:
-    path: /etc/crowdsec/acquis.yaml
-    insertafter: EOF
-    block: "{{ cs_acquis_addon }}"
-    backup: yes
+- name: Crowdsec - template acquis.yaml
+  template:
+    src: "{{ cs_acquis_templ_name }}"
+    dest: /etc/crowdsec/acquis.yaml
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Crowdsec - cscli bash completion
   ansible.builtin.shell: "cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
