@@ -32,5 +32,5 @@
 
 - name: Crowdsec Add Repository
   apt_repository:
-    repo: "deb https://packagecloud.io/crowdsec/crowdsec/{{ ansible_distribution | lower  }} {{ansible_distribution_release | lower}} main"
+    repo: "deb https://packagecloud.io/crowdsec/crowdsec/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower}} main"
     state: present
