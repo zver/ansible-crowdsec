@@ -53,7 +53,7 @@ cs_acquis_addon: |
       journalctl_filter:
         - "_SYSTEMD_UNIT=ssh.service"
       labels:
-        type: journald"
+        type: journald
       ---
 
 cs_parsers_mywhitelists_ip:
