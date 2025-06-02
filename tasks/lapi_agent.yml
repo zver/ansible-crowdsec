@@ -39,7 +39,7 @@
     daemon_reload: true
     name: crowdsec
 
-- name: Crowdsec - enable  and  start services
+- name: Crowdsec - enable and start services
   service:
     name: crowdsec
     state: started

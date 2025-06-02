@@ -195,7 +195,7 @@
     - "'crowdsecurity/whitelists' in cs_parsers_list"
     - cs_parsers_mywhitelists_ip|length > 0 or cs_parsers_mywhitelists_cidr|length > 0
 
-- name: Crowdsec enable  and  start services
+- name: Crowdsec enable and start services
   service:
     name: crowdsec
     state: started
@@ -203,7 +203,7 @@
   when:
     - enable_crowdsec
 
-- name: Crowdsec-firewall-bouncer enable  and  start services
+- name: Crowdsec-firewall-bouncer enable and start services
   service:
     name: crowdsec-firewall-bouncer
     state: started

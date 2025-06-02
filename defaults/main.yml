@@ -3,21 +3,17 @@ default_os_firewall: "nftables"
 crowdsec_install_firewall_bouncer: true
 
 cs_collections_list:
-  - crowdsecurity/nginx
-  - crowdsecurity/apache2
   - crowdsecurity/sshd
   - crowdsecurity/linux
-  - crowdsecurity/iptables
-  - crowdsecurity/http-cve
 
 cs_collections_remove_list: []
 # eg.
 # cs_collections_remove_list:
 #   - crowdsecurity/http-cve
 
-cs_scenarios_list:
-  - crowdsecurity/apache_log4j2_cve-2021-44228
-  - crowdsecurity/http-cve-2021-42013
+cs_scenarios_list: []
+#  - crowdsecurity/apache_log4j2_cve-2021-44228
+#  - crowdsecurity/http-cve-2021-42013
 
 cs_scenarios_remove_list: []
 # eg.
@@ -26,7 +22,7 @@ cs_scenarios_remove_list: []
 
 cs_parsers_list:
   - crowdsecurity/docker-logs
-  - crowdsecurity/apache2-logs
+  - crowdsecurity/syslog-logs
   - crowdsecurity/whitelists
 
 cs_parsers_remove_list: []
@@ -56,13 +52,9 @@ cs_acquis_addon: |
         type: journald
       ---
 
-cs_parsers_mywhitelists_ip:
-  - "127.0.0.1" # localhost
+cs_parsers_mywhitelists_ip: []
 
-cs_parsers_mywhitelists_cidr:
-  - "192.168.0.0/16"
-  - "172.16.0.0/12"
-  - "10.0.0.0/8"
+cs_parsers_mywhitelists_cidr: []
 
 crowdsec_lapi_port: 8080
 # LAPI server in host vars...
