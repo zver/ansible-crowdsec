@@ -9,22 +9,6 @@
       - debian-archive-keyring
     state: present
 
-- name: Install nftables when using firewall bouncer
-  package:
-    name:
-      - nftables
-    state: present
-  when: crowdsec_install_firewall_bouncer|bool
-
-- name: Start nftables services
-  service:
-    name: nftables
-    state: started
-    enabled: true
-  when:
-    - default_os_firewall == 'nftables'
-    - crowdsec_install_firewall_bouncer|bool
-
 - name: Crowdsec Add GPG apt Key
   apt_key:
     url: https://packagecloud.io/crowdsec/crowdsec/gpgkey

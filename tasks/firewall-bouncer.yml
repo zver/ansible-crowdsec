@@ -1,0 +1,74 @@
+---
+- name: Install nftables when using firewall bouncer
+  package:
+    name:
+      - nftables
+    state: present
+  when: cs_firewall_bouncer|bool
+
+- name: Start nftables services
+  service:
+    name: nftables
+    state: started
+    enabled: true
+  when:
+    - default_os_firewall == 'nftables'
+    - cs_firewall_bouncer|bool
+
+- name: Crowdsec-firewall-bouncer-nftables
+  package:
+    update_cache: true
+    name: crowdsec-firewall-bouncer-nftables
+    state: present
+  when:
+    - cs_firewall_bouncer
+    - ansible_os_family | lower == "debian"
+
+- name: Crowdsec-firewall-bouncer-nftables
+  package:
+    update_cache: yes
+    name: crowdsec-firewall-bouncer-nftables
+    state: present
+  when:
+    - cs_firewall_bouncer
+    - ansible_os_family | lower == "redhat"
+    - ansible_distribution_major_version > '7'
+
+- name: Crowdsec-firewall-bouncer-iptables
+  package:
+    update_cache: true
+    name: crowdsec-firewall-bouncer-iptables
+    state: present
+  when:
+    - ansible_os_family | lower == "redhat"
+    - ansible_distribution_major_version == '7'
+    - cs_firewall_bouncer
+
+- name: Configure crowdsec-firewall-bouncer when using lapi server (1/3)
+  template:
+    src: "{{ cs_template_dir }}bouncer-firewall/crowdsec-firewall-bouncer.yaml.j2"
+    dest: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Restart crowdsec-firewall-bouncer
+  when:
+    - crowdsec_lapi_ip is defined
+    - cs_firewall_bouncer
+
+- name: Crowdsec-firewall-bouncer enable and start service
+  service:
+    name: crowdsec-firewall-bouncer
+    state: started
+    enabled: true
+  when:
+    - cs_firewall_bouncer
+
+- name: Crowdsec-firewall-bouncer disable and stop service
+  service:
+    name: crowdsec-firewall-bouncer
+    state: stopped
+    enabled: false
+  when:
+    - not cs_firewall_bouncer

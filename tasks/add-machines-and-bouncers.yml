@@ -1,0 +1,30 @@
+---
+- name: Crowdsec - cscli machines add cs_agents on server
+  command:
+    cmd: "{{ cs_exec_insert }}cscli machines add {{ inventory_hostname }} -p {{ (inventory_hostname + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} --force"
+  when:
+    - cs_lapi_agent
+
+- name: Find bouncer hosts in ansible
+  set_fact:
+    cs_bouncer_hosts: "{{ bouncer_hosts | default([]) + [item] }}"
+  loop: "{{ groups['all'] }}"
+  when: hostvars[item].cs_firewall_bouncer | default(false) | bool
+
+- name: Show bouncer hosts
+  debug:
+    var: cs_bouncer_hosts
+
+- name: Add Crowdsec bouncers
+  command:
+    cmd: "{{ cs_exec_insert }}cscli bouncers add {{ item }} -k {{ (item + cs_bouncer_secret) | hash('sha256') | truncate(32, end='') }}"
+  loop: "{{ cs_bouncer_hosts }}"
+  register: cscli_command
+  ignore_errors: true
+  when:
+    - cs_lapi_server
+    - cs_bouncer_hosts|length > 0
+  failed_when: >
+    cscli_command.rc != 0 and
+    'unable to create bouncer: bouncer' not in cscli_command.stderr and
+    'already exists' not in cscli_command.stderr

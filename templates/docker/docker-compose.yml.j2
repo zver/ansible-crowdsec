@@ -1,0 +1,59 @@
+---
+services:  
+  crowdsec:
+    image: crowdsecurity/crowdsec
+    container_name: crowdsec
+    restart: always
+    networks:
+      crowdsec:
+    ports:
+{% if cs_lapi_server %}
+      - "{{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}:{{ crowdsec_lapi_port }}"
+{% endif %}
+{% if cs_prometheus_enabled %}
+      - "{{ cs_prometheus_listen_addr }}:{{ cs_prometheus_listen_port }}:{{ cs_prometheus_listen_port }}"
+{% endif %}
+    environment:
+      DOCKER_HOST: tcp://socket-proxy:2375
+    volumes:
+      - ./volumes/var_lib_crowdsec_data:/var/lib/crowdsec/data/
+      - ./volumes/etc_crowdsec:/etc/crowdsec/
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /var/log/syslog:/var/log/syslog:ro
+      - /var/log/journal:/run/log/journal:ro
+
+  socket-proxy:
+    networks:
+      crowdsec:
+    restart: always
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: socket-proxy
+    environment:
+      INFO: 1
+      CONTAINERS: 1
+      POST: 0
+      BUILD: 0
+      COMMIT: 0
+      CONFIGS: 0
+      DISTRIBUTION: 0
+      EXEC: 0
+      GRPC: 0
+      IMAGES: 0
+      NETWORKS: 0
+      NODES: 0
+      PLUGINS: 0
+      SERVICES: 0
+      SESSION: 0
+      SWARM: 0
+      SYSTEM: 0
+      TASKS: 0
+      VOLUMES: 0
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    read_only: true
+    tmpfs:
+      - /run
+
+networks:
+  crowdsec:
+    driver: bridge

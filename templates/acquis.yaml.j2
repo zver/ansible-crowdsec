@@ -1,0 +1,27 @@
+---
+source: docker
+container_name:
+  - nginx
+labels:
+  type: nginx
+---
+filenames:
+  - /var/log/syslog
+labels:
+  type: syslog
+---
+filenames:
+  - /var/log/auth.log
+labels:
+  type: syslog
+---
+filenames:
+  - /var/log/openvpn.log
+labels:
+  type: syslog
+---
+source: journalctl
+journalctl_filter:
+  - "_SYSTEMD_UNIT=vsftpd.service"
+labels:
+  type: journald

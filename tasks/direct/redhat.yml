@@ -3,18 +3,18 @@
   dnf:
     name: nftables
     state: present
-  when: crowdsec_install_firewall_bouncer|bool
+  when: cs_firewall_bouncer|bool
 
 - name: Start nftables services
   service:
     name: nftables
     state: started
     enabled: yes
-  when: crowdsec_install_firewall_bouncer|bool
+  when: cs_firewall_bouncer|bool
 
 - name: Copy crowdsec repo file into place.
   template:
-    src: templates/crowdsec_crowdsec.j2
+    src: templates/redhat/crowdsec_crowdsec.j2
     dest: /etc/yum.repos.d/crowdsec_crowdsec.repo
     owner: root
     group: root

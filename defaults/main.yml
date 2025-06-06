@@ -1,79 +1,84 @@
 ---
-default_os_firewall: "nftables"
-crowdsec_install_firewall_bouncer: true
+### Installation type.
+# 'direct' for install on host and
+# 'docker' for install in docker container.
+#
+# 'docker' type supports install db in local files (sqlite)
+# and agent and lapi server parts. Installing bouncer into
+# a container doesn't make sense.
+# Also see crowdsec_lapi_db for direct installation below.
+cs_install_type: 'direct'
+cs_docker_install_dir: '/opt/crowdsec'
 
+# Enable and start crowdsec service (lapi and agent)?
+cs_enabled: true
+
+# What part crowdsec for installation?
+cs_firewall_bouncer: true
+cs_lapi_server: false
+cs_lapi_agent: true
+
+### Central API
+cs_central_api_enabled: false
+cs_central_api_login: ''
+cs_central_api_password: ''
+
+### Templates
+# Base template dir. You can use it for store your custom
+# templates.
+cs_template_dir: ''
+# You can specify acquis.yaml template file for each host our group
+cs_template_acquis: 'acquis.yaml.j2'
+
+### Secret strings for generate keys
+# cs_agent_secret: 'FIXME.SETUP.STRONG.AGENT.SECRET'
+# cs_bouncer_secret: 'FIXME.SETUP.STRONG.BOUNCER.SECRET'
+
+### Other settings
+default_os_firewall: "nftables"
+cs_ban_duration: "4h"
 cs_collections_list:
   - crowdsecurity/linux
-
 cs_collections_remove_list: []
-# eg.
-# cs_collections_remove_list:
-#   - crowdsecurity/http-cve
-
 cs_scenarios_list: []
-#  - crowdsecurity/apache_log4j2_cve-2021-44228
-#  - crowdsecurity/http-cve-2021-42013
-
 cs_scenarios_remove_list: []
-# eg.
-# cs_scenarios_remove_list:
-#   - crowdsecurity/apache_log4j2_cve-2021-44228
-
 cs_parsers_list:
   - crowdsecurity/docker-logs
   - crowdsecurity/syslog-logs
   - crowdsecurity/whitelists
-
 cs_parsers_remove_list: []
-# eg.
-# parsers_remove_list:
-#  - crowdsecurity/whitelists
-
 cs_postoverflows_list:
   - crowdsecurity/cdn-whitelist
   - crowdsecurity/seo-bots-whitelist
-
 cs_postoverflows_remove_list: []
-# eg.
-# cs_postoverflows_remove_list:
-#   - crowdsecurity/seo-bots-whitelist
 
-cs_ban_duration: "duration: 4h" # PROD eg. 10m for testing
+### Prometheus
+cs_prometheus_enabled: true
+cs_prometheus_listen_addr: 127.0.0.1
+cs_prometheus_listen_port: 6060
 
-cs_prometheus_endpoint: "enabled: true"
-
-cs_acquis_templ_name: "cs_acquis.j2"
-
+### Custom white ip and nets
 cs_parsers_mywhitelists_ip: []
-
 cs_parsers_mywhitelists_cidr: []
 
+## LAPI server
+crowdsec_lapi_listen: 127.0.0.1 # LAPI server interface for listen
 crowdsec_lapi_port: 8080
-# LAPI server in host vars...
-# enable_crowdsec: true
-# crowdsec_install_firewall_bouncer: true
-# crowdsec_lapi_server: true
-# crowdsec_lapi_agent: true
-# crowdsec_lapi_ip: 192.168.56.11
-# crowdsec_agent_hosts:
-#   - srv02.test
-#   - srv03.test
-#   - srv04.test
-# crowdsec_agent_bouncers:
-#   - cs-firewall-bouncer-123456789
-# crowdsec_agent_hosts_password: 'VeryLongPasswordShouldBeRandomChangeme2022!'
-# crowdsec_lapi_db: mysql # Use mysql or psql
+crowdsec_lapi_ip: 127.0.0.1 # LAPI server interface for make requests
+
+### Database settings
+crowdsec_lapi_db: sqlite # Use mysql or psql or sqlite
+crowdsec_sqlite_db_path: /var/lib/crowdsec/data/crowdsec.db
+
+## PgSQL
+# crowdsec_psql_host: 127.0.0.1
+# crowdsec_psql_port: 5432
 # crowdsec_psql_db_user: crowdsec
-# crowdsec_psql_db_password: 'VeryLongPasswordPsqlChangeme2022!'
+# crowdsec_psql_db_password: ''
 # crowdsec_psql_db_name: crowdsec
+
+## MySQL
 # crowdsec_mysql_db_user: crowdsec
-# crowdsec_mysql_db_password: 'VeryLongPasswordPsqlChangeme2024!'
+# crowdsec_mysql_db_password: ''
 # crowdsec_mysql_db_name: crowdsec
 # crowdsec_mysql_db_host: localhost
-
-# LAPI agent in host vars...
-# enable_crowdsec: true
-# crowdsec_install_firewall_bouncer: true
-# crowdsec_lapi_agent: true
-# crowdsec_lapi_ip: 192.168.56.11
-# crowdsec_agent_hosts_password: 'VeryLongPasswordShouldBeRandomChangeme2022!'

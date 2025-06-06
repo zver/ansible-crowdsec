@@ -1,0 +1,6 @@
+---
+- name: Include LAPI server PGSQL DB tasks
+  include_tasks: lapi_server_db_pg.yml
+  when:
+    - crowdsec_lapi_db is defined
+    - crowdsec_lapi_db == "psql"

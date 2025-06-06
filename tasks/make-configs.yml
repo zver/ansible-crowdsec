@@ -1,0 +1,165 @@
+---
+### Config files
+- name: Crowdsec - template configs.yaml
+  template:
+    src: "{{ cs_template_dir }}config.yaml.j2"
+    dest: "{{ cs_config_dir }}config.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Crowdsec - template lapi profiles.yaml
+  template:
+    src: "{{ cs_template_dir }}profiles.yaml.j2"
+    dest: "{{ cs_config_dir }}profiles.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_server
+
+- name: Crowdsec - template lapi online_api_credentials.yaml
+  template:
+    src: "{{ cs_template_dir }}online_api_credentials.yaml.j2"
+    dest: "{{ cs_config_dir }}online_api_credentials.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_server
+    - cs_central_api_enabled
+
+- name: Crowdsec - template local_api_credentials.yaml
+  template:
+    src: "{{ cs_template_dir }}local_api_credentials.yaml.j2"
+    dest: "{{ cs_config_dir }}local_api_credentials.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_agent
+
+- name: Crowdsec - template acquis.yaml
+  template:
+    src: "{{ cs_template_dir }}{{ cs_template_acquis }}"
+    dest: "{{ cs_config_dir }}acquis.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_agent
+
+- name: Crowdsec - add mywhitelists.yml
+  template:
+    src: "{{ cs_template_dir }}whitelists.j2"
+    dest: "{{ cs_config_dir }}parsers/s02-enrich/mywhitelists.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_agent
+    - "'crowdsecurity/whitelists' in cs_parsers_list"
+    - cs_parsers_mywhitelists_ip|length > 0 or cs_parsers_mywhitelists_cidr|length > 0
+
+- name: Start docker container for use cscli in docker
+  service:
+    name: crowdsec-docker
+    state: started
+  when:
+    - cs_install_type == 'docker'
+
+- name: Wait for docker container
+  command: docker exec crowdsec true
+  changed_when: false
+  register: cmd_output
+  until: cmd_output.rc == 0
+  retries: 10
+  delay: 5
+  when:
+    - cs_install_type == 'docker'
+
+# Update / upgrade
+- name: Hub update
+  command:
+    cmd: "{{ cs_exec_insert }}cscli hub update"
+  changed_when: false
+
+- name: Hub upgrade
+  command:
+    cmd: "{{ cs_exec_insert }}cscli hub upgrade"
+  register: hub_upgrade_result
+  changed_when: false
+
+# collections
+- name: Crowdsec - install collections (use force to install collections with deleted scenarios)
+  command:
+    cmd: "{{ cs_exec_insert }}cscli collections install {{ item }} --force"
+  with_items: "{{ cs_collections_list }}"
+  register: collections_install_result
+  changed_when: "'overwrite' not in collections_install_result.stderr"
+  when: cs_collections_list | length > 0
+
+- name: Crowdsec - remove collections
+  command:
+    cmd: "{{ cs_exec_insert }}cscli collections remove {{ item }}"
+  with_items: "{{ cs_collections_remove_list }}"
+  register: collections_remove_result
+  changed_when: "'sudo systemctl reload crowdsec' in collections_remove_result.stderr"
+  when: cs_collections_remove_list | length > 0
+
+# scenarios
+- name: Crowdsec - install scenarios
+  command:
+    cmd: "{{ cs_exec_insert }}cscli scenarios install {{ item }}"
+  with_items: "{{ cs_scenarios_list }}"
+  register: scenarios_install_result
+  changed_when: "'overwrite' not in scenarios_install_result.stderr"
+  when: cs_scenarios_list | length > 0
+
+- name: Crowdsec - remove scenarios  (use force to delete scenarios included in collections)
+  command:
+    cmd: "{{ cs_exec_insert }}cscli scenarios remove {{ item }} --force"
+  with_items: "{{ cs_scenarios_remove_list }}"
+  register: scenarios_remove_result
+  changed_when: "'sudo systemctl reload crowdsec' in scenarios_remove_result.stderr"
+  when: cs_scenarios_remove_list | length > 0
+
+# parsers
+- name: Crowdsec - install parsers
+  command:
+    cmd: "{{ cs_exec_insert }}cscli parsers install {{ item }}"
+  with_items: "{{ cs_parsers_list }}"
+  register: parsers_install_result
+  changed_when: "'overwrite' not in parsers_install_result.stderr"
+  when: cs_parsers_list | length > 0
+
+- name: Crowdsec - remove parsers
+  command:
+    cmd: "{{ cs_exec_insert }}cscli parsers remove {{ item }}"
+  with_items: "{{ cs_parsers_remove_list }}"
+  register: parsers_remove_result
+  changed_when: "'sudo systemctl reload crowdsec' in parsers_remove_result.stderr"
+  when: cs_parsers_remove_list | length > 0
+
+# postoverflows
+- name: Crowdsec - install postoverflows
+  command:
+    cmd: "{{ cs_exec_insert }}cscli postoverflows install {{ item }}"
+  with_items: "{{ cs_postoverflows_list }}"
+  register: postoverflows_install_result
+  changed_when: "'overwrite' not in postoverflows_install_result.stderr"
+  when: cs_postoverflows_list | length > 0
+
+- name: Crowdsec - remove postoverflows
+  command:
+    cmd: "{{ cs_exec_insert }}cscli postoverflows remove {{ item }}"
+  with_items: "{{ cs_postoverflows_remove_list }}"
+  register: postoverflows_remove_result
+  changed_when: "'sudo systemctl reload crowdsec' in postoverflows_remove_result.stderr"
+  when: cs_postoverflows_remove_list | length > 0
+
+- name: Crowdsec - cscli bash completion
+  ansible.builtin.shell: "{{ cs_exec_insert }}cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
+  register: bash_completion_result
+  changed_when: "'# bash completion for' not in bash_completion_result.stdout"
+  failed_when: "'Error' in bash_completion_result.stderr"

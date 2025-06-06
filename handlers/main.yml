@@ -2,8 +2,22 @@
   service:
     name: crowdsec
     state: restarted
+  when:
+    - cs_install_type == 'direct'
+
+- name: Restart crowdsec-docker
+  service:
+    name: crowdsec-docker
+    state: restarted
+  when:
+    - cs_install_type == 'docker'
 
 - name: Restart crowdsec-firewall-bouncer
   service:
     name: crowdsec-firewall-bouncer
     state: restarted
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+  register: systemctl_reload_status
+  failed_when: systemctl_reload_status != 0

@@ -12,21 +12,35 @@ config_paths:
   index_path: /etc/crowdsec/hub/.index.json
   notification_dir: /etc/crowdsec/notifications/
   plugin_dir: /usr/lib/crowdsec/plugins/
+{% if cs_lapi_agent %}
 crowdsec_service:
   acquisition_path: /etc/crowdsec/acquis.yaml
   parser_routines: 1
+{% endif %}
 cscli:
   output: human
 db_config:
   log_level: info
+{% if cs_lapi_server %}
+{% if crowdsec_lapi_db is defined and crowdsec_lapi_db == 'mysql' %}
+  type: mysql
+  user: {{ crowdsec_mysql_db_user }}
+  password: "{{ crowdsec_mysql_db_password }}"
+  db_name: {{ crowdsec_mysql_db_name }}
+  host: {{ crowdsec_mysql_db_host }}
+  port: 3306
+{% elif crowdsec_lapi_db is defined and crowdsec_lapi_db == 'sqlite' %}
   type: sqlite
-  db_path: /var/lib/crowdsec/data/crowdsec.db
-  #max_open_conns: 100
-  #user: 
-  #password:
-  #db_name:
-  #host:
-  #port:
+  db_path: {{ crowdsec_sqlite_db_path }} 
+{% else %}
+  type:	postgres
+  user: {{ crowdsec_psql_db_user }}
+  password: "{{ crowdsec_psql_db_password }}"
+  db_name: {{ crowdsec_psql_db_name }}
+  host: {{ crowdsec_psql_host }}
+  port: {{ crowdsec_psql_port }}
+{% endif %}
+{% endif %}
   flush:
     max_items: 5000
     max_age: 7d
@@ -34,24 +48,32 @@ plugin_config:
   user: nobody # plugin process would be ran on behalf of this user
   group: nogroup # plugin process would be ran on behalf of this group
 api:
+{% if cs_lapi_agent %}
   client:
     insecure_skip_verify: false
     credentials_path: /etc/crowdsec/local_api_credentials.yaml
+{% endif %}
+{% if cs_lapi_server %}
   server:
     log_level: info
-    listen_uri: 192.168.56.11:8080
+    listen_uri: {{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}
     profiles_path: /etc/crowdsec/profiles.yaml
     console_path: /etc/crowdsec/console.yaml
+{% if cs_central_api_enabled %}
     online_client: # Central API credentials (to push signals and receive bad IPs)
       credentials_path: /etc/crowdsec/online_api_credentials.yaml
+{% endif %}
     trusted_ips: # IP ranges, or IPs which can have admin API access
       - 127.0.0.1
       - ::1
 #    tls:
 #      cert_file: /etc/crowdsec/ssl/cert.pem
 #      key_file: /etc/crowdsec/ssl/key.pem
+{% endif %}
+{% if cs_prometheus_enabled %}
 prometheus:
   enabled: true
   level: full
-  listen_addr: 127.0.0.1
-  listen_port: 6060
+  listen_addr: {{ cs_prometheus_listen_addr }}
+  listen_port: {{ cs_prometheus_listen_port }}
+{% endif %}

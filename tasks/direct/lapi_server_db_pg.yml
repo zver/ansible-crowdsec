@@ -1,0 +1,39 @@
+---
+- name: Crowdsec - apt update and install postgresql
+  package:
+    update_cache: true
+    name:
+      - postgresql
+      - python3-psycopg2
+    state: present
+
+- name: Crowdsec - postgresql enable and start services
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Crowdsec - create crowdsec database
+  postgresql_db:
+    state: present
+    name: "{{ crowdsec_psql_db_name }}"
+  become: true
+  become_user: postgres
+
+- name: Crowdsec - create crowdsec db userc
+  postgresql_user:
+    state: present
+    name: "{{ crowdsec_psql_db_user }}"
+    password: "{{ crowdsec_psql_db_password }}"
+  become: true
+  become_user: postgres
+
+- name: Crowdsec - grant db user access to app db
+  postgresql_privs:
+    type: database
+    database: "{{ crowdsec_psql_db_name }}"
+    roles: "{{ crowdsec_psql_db_user }}"
+    grant_option: no
+    privs: all
+  become: true
+  become_user: postgres

@@ -1,0 +1,19 @@
+---
+- name: Crowdsec - copy /lib/systemd/system/crowdsec.service
+  copy:
+    src: /lib/systemd/system/crowdsec.service
+    dest: /etc/systemd/system/crowdsec.service
+    mode: "0644"
+    owner: root
+    group: root
+    remote_src: true
+
+# Use --no-api in crowdsec service when the ansible_host is not a lapi server
+- name: Crowdsec - edit /etc/systemd/system/crowdsec.service -no-api on agent
+  replace:
+    path: "/etc/systemd/system/crowdsec.service"
+    regexp: 'ExecStart=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml'
+    replace: 'ExecStart=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -no-api'
+    backup: true
+  when:
+    - cs_lapi_server is not defined or not cs_lapi_server|bool

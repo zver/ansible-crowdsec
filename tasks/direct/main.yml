@@ -1,0 +1,48 @@
+---
+- name: Debian
+  include_tasks: debian.yml
+  when: ansible_os_family | lower == "debian"
+
+- name: RedHat>7
+  include_tasks: redhat.yml
+  when:
+    - ansible_os_family | lower == "redhat"
+    - ansible_distribution_major_version >= '8'
+
+- name: RedHat7
+  include_tasks: redhat7.yml
+  when:
+    - ansible_os_family | lower == "redhat"
+    - ansible_distribution_major_version == '7'
+
+- name: Apt update and install Crowdsec
+  package:
+    update_cache: yes
+    name: crowdsec
+    state: present
+
+- name: Crowdsec - LAPI server setup
+  include_tasks: lapi_server.yml
+  when:
+    - cs_lapi_server
+
+- name: Crowdsec - LAPI agent setup
+  include_tasks: lapi_agent.yml
+  when:
+    - inventory_hostname in groups["cs_agents"]
+
+- name: Crowdsec - enable and start service
+  service:
+    name: crowdsec
+    state: started
+    enabled: true
+  when:
+    - cs_enabled
+
+- name: Crowdsec - disable and stop service
+  service:
+    name: crowdsec
+    state: stopped
+    enabled: false
+  when:
+    - not cs_enabled

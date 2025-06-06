@@ -1,226 +1,42 @@
 ---
-- name: Debian
-  include_tasks: debian.yml
-  when: ansible_os_family | lower == "debian"
+- name: Crowdsec - set install config dir
+  set_fact:
+    cs_config_dir: >-
+      {{ '{{ cs_docker_install_dir }}/volumes/etc_crowdsec/' if cs_install_type == 'docker' else '/etc/crowdsec/' }}
+    cs_exec_insert: >-
+      {{ 'docker exec crowdsec ' if cs_install_type == 'docker' else '' }}
 
-- name: RedHat>7
-  include_tasks: redhat.yml
+- name: Gen agent key
+  set_fact:
+    cs_agent_key: >-
+      {{ (inventory_hostname + cs_agent_secret) | hash('sha256') | truncate(32, end='') }}
   when:
-    - ansible_os_family | lower == "redhat"
-    - ansible_distribution_major_version >= '8'
+    - cs_lapi_agent
 
-- name: RedHat7
-  include_tasks: redhat7.yml
+- name: Gen bouncer key
+  set_fact:
+    cs_bouncer_key: >-
+      {{ (inventory_hostname + cs_bouncer_secret) | hash('sha256') | truncate(32, end='') }}
   when:
-    - ansible_os_family | lower == "redhat"
-    - ansible_distribution_major_version == '7'
+    - cs_firewall_bouncer
 
-- name: Apt update and install Crowdsec
-  package:
-    update_cache: yes
-    name: crowdsec
-    state: present
+- name: Crowdsec - direct installation
+  include_tasks: direct/main.yml
+  when: cs_install_type == 'direct'
 
-- name: Crowdsec-firewall-bouncer-nftables
-  package:
-    update_cache: true
-    name: crowdsec-firewall-bouncer-nftables
-    state: present
+- name: Crowdsec - docker installation
+  include_tasks: docker/main.yml
+  when: cs_install_type == 'docker'
+
+- name: Crowdsec - make configs
+  include_tasks: make-configs.yml
+
+- name: Crowdsec - firewall bouncer installation (direct)
+  include_tasks: firewall-bouncer.yml
   when:
-    - crowdsec_install_firewall_bouncer
-    - ansible_os_family | lower == "debian"
+    - cs_firewall_bouncer
 
-- name: Crowdsec-firewall-bouncer-nftables
-  package:
-    update_cache: yes
-    name: crowdsec-firewall-bouncer-nftables
-    state: present
+- name: Add machines and bouncers to lapi server
+  include_tasks: add-machines-and-bouncers.yml
   when:
-    - crowdsec_install_firewall_bouncer
-    - ansible_os_family | lower == "redhat"
-    - ansible_distribution_major_version > '7'
-
-- name: Crowdsec-firewall-bouncer-iptables
-  package:
-    update_cache: true
-    name: crowdsec-firewall-bouncer-iptables
-    state: present
-  when:
-    - ansible_os_family | lower == "redhat"
-    - ansible_distribution_major_version == '7'
-    - crowdsec_install_firewall_bouncer
-
-- name: Configure crowdsec-firewall-bouncer when using lapi server (1/2)
-  replace:
-    path: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
-    regexp: '^api_url:.*$'
-    replace: "api_url: http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }}"
-    backup: yes
-  notify:
-    - Restart crowdsec-firewall-bouncer
-  when:
-    - crowdsec_lapi_ip is defined
-    - crowdsec_install_firewall_bouncer
-
-- name: Configure crowdsec-firewall-bouncer when using lapi server (2/2)
-  replace:
-    path: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
-    regexp: '^api_key:.*$'
-    replace: "api_key: {{ crowdsec_agent_hosts_password }}"
-    backup: yes
-  notify:
-    - Restart crowdsec-firewall-bouncer
-  when:
-    - crowdsec_lapi_ip is defined
-    - crowdsec_install_firewall_bouncer
-
-# Update / upgrade
-- name: Hub update
-  command:
-    cmd: cscli hub update
-  changed_when: false
-
-- name: Hub upgrade
-  command:
-    cmd: cscli hub upgrade
-  register: hub_upgrade_result
-  changed_when: false
-
-# collections
-- name: Crowdsec - install collections (use force to install collections with deleted scenarios)
-  command:
-    cmd: "sudo cscli collections install {{ item }} --force"
-  with_items: "{{ cs_collections_list }}"
-  register: collections_install_result
-  changed_when: "'overwrite' not in collections_install_result.stderr"
-  when: cs_collections_list | length > 0
-
-- name: Crowdsec - remove collections
-  command:
-    cmd: "sudo cscli collections remove {{ item }}"
-  with_items: "{{ cs_collections_remove_list }}"
-  register: collections_remove_result
-  changed_when: "'sudo systemctl reload crowdsec' in collections_remove_result.stderr"
-  when: cs_collections_remove_list | length > 0
-
-# scenarios
-- name: Crowdsec - install scenarios
-  command:
-    cmd: "sudo cscli scenarios install {{ item }}"
-  with_items: "{{ cs_scenarios_list }}"
-  register: scenarios_install_result
-  changed_when: "'overwrite' not in scenarios_install_result.stderr"
-  when: cs_scenarios_list | length > 0
-
-- name: Crowdsec - remove scenarios  (use force to delete scenarios included in collections)
-  command:
-    cmd: "sudo cscli scenarios remove {{ item }} --force"
-  with_items: "{{ cs_scenarios_remove_list }}"
-  register: scenarios_remove_result
-  changed_when: "'sudo systemctl reload crowdsec' in scenarios_remove_result.stderr"
-  when: cs_scenarios_remove_list | length > 0
-
-# parsers
-- name: Crowdsec - install parsers
-  command:
-    cmd: "sudo cscli parsers install {{ item }}"
-  with_items: "{{ cs_parsers_list }}"
-  register: parsers_install_result
-  changed_when: "'overwrite' not in parsers_install_result.stderr"
-  when: cs_parsers_list | length > 0
-
-- name: Crowdsec - remove parsers
-  command:
-    cmd: "sudo cscli parsers remove {{ item }}"
-  with_items: "{{ cs_parsers_remove_list }}"
-  register: parsers_remove_result
-  changed_when: "'sudo systemctl reload crowdsec' in parsers_remove_result.stderr"
-  when: cs_parsers_remove_list | length > 0
-
-# postoverflows
-- name: Crowdsec - install postoverflows
-  command:
-    cmd: "sudo cscli postoverflows install {{ item }}"
-  with_items: "{{ cs_postoverflows_list }}"
-  register: postoverflows_install_result
-  changed_when: "'overwrite' not in postoverflows_install_result.stderr"
-  when: cs_postoverflows_list | length > 0
-
-- name: Crowdsec - remove postoverflows
-  command:
-    cmd: "sudo cscli postoverflows remove {{ item }}"
-  with_items: "{{ cs_postoverflows_remove_list }}"
-  register: postoverflows_remove_result
-  changed_when: "'sudo systemctl reload crowdsec' in postoverflows_remove_result.stderr"
-  when: cs_postoverflows_remove_list | length > 0
-
-### Config files
-- name: Crowdsec - enable/disable the Prometheus endpoint
-  replace:
-    path: "/etc/crowdsec/config.yaml"
-    after: "prometheus:"
-    regexp: 'enabled:.*$'
-    replace: "{{ cs_prometheus_endpoint }}"
-    backup: yes
-
-- name: Crowdsec - ajust ban time
-  replace:
-    path: "/etc/crowdsec/profiles.yaml"
-    after: "- type: ban"
-    regexp: 'duration: [0-9].*$'
-    replace: "{{ cs_ban_duration }}"
-    backup: yes
-
-- name: Crowdsec - template acquis.yaml
-  template:
-    src: "{{ cs_acquis_templ_name }}"
-    dest: /etc/crowdsec/acquis.yaml
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Crowdsec - cscli bash completion
-  ansible.builtin.shell: "cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
-  register: bash_completion_result
-  changed_when: "'# bash completion for' not in bash_completion_result.stdout"
-  failed_when: "'Error' in bash_completion_result.stderr"
-
-- name: Crowdsec - add mywhitelists.yml
-  template:
-    src: templates/whitelists.j2
-    dest: /etc/crowdsec/parsers/s02-enrich/mywhitelists.yaml
-    owner: root
-    group: root
-    mode: "0644"
-  when:
-    - "'crowdsecurity/whitelists' in cs_parsers_list"
-    - cs_parsers_mywhitelists_ip|length > 0 or cs_parsers_mywhitelists_cidr|length > 0
-
-- name: Crowdsec enable and start services
-  service:
-    name: crowdsec
-    state: started
-    enabled: true
-  when:
-    - enable_crowdsec
-
-- name: Crowdsec-firewall-bouncer enable and start services
-  service:
-    name: crowdsec-firewall-bouncer
-    state: started
-    enabled: true
-  when:
-    - crowdsec_install_firewall_bouncer
-
-### ------------ ####
-# Muti server setup #
-
-- name: Crowdsec - LAPI server setup
-  include_tasks: lapi_server.yml
-  when:
-    - inventory_hostname in groups["cs_lapi_server"]
-
-- name: Crowdsec - LAPI agent setup
-  include_tasks: lapi_agent.yml
-  when:
-    - inventory_hostname in groups["cs_agents"]
+    - cs_lapi_server

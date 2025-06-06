@@ -1,0 +1,47 @@
+---
+- name: Crowdsec - docker - mkdir volumes dir
+  file:
+    path: "{{ cs_docker_install_dir }}/volumes/{{ item }}"
+    state: directory
+    mode: '0755'
+    recurse: yes
+  loop:
+    - etc_crowdsec
+    - var_lib_crowdsec_data
+
+- name: Crowdsec - docker - docker-compose.yml
+  template:
+    src: docker/docker-compose.yml.j2
+    dest: "{{ cs_docker_install_dir }}/docker-compose.yml"
+    mode: '0644'
+  notify: Restart crowdsec-docker
+
+- name: Crowdsec - docker - crowdsec-docker systemd config
+  template:
+    src: docker/crowdsec-docker.service.j2
+    dest: "/etc/systemd/system/crowdsec-docker.service"
+    mode: '0644'
+  notify: 'Reload systemd'
+
+- name: Crowdsec-docker enable and start service
+  service:
+    name: crowdsec-docker
+    state: started
+    enabled: true
+  when:
+    - cs_enabled
+
+- name: Crowdsec disable and stop service
+  service:
+    name: crowdsec-docker
+    state: stopped
+    enabled: false
+  when:
+    - not cs_enabled
+
+- name: Uninstall crowdsec on host (direct)
+  ansible.builtin.package:
+    name: crowdsec
+    state: absent
+  when:
+    - cs_enabled
