@@ -21,7 +21,7 @@ services:
       - /var/log/auth.log:/var/log/auth.log:ro
       - /var/log/syslog:/var/log/syslog:ro
       - /var/log/journal:/run/log/journal:ro
-
+{% if cs_lapi_agent %}
   socket-proxy:
     networks:
       crowdsec:
@@ -53,6 +53,7 @@ services:
     read_only: true
     tmpfs:
       - /run
+{% endif %}
 
 networks:
   crowdsec:
