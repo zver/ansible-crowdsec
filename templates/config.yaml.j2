@@ -51,8 +51,8 @@ api:
   client:
     insecure_skip_verify: false
     credentials_path: /etc/crowdsec/local_api_credentials.yaml
-{% if cs_lapi_server %}
   server:
+{% if cs_lapi_server %}
     log_level: info
     listen_uri: {{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}
     profiles_path: /etc/crowdsec/profiles.yaml
@@ -67,6 +67,8 @@ api:
 #    tls:
 #      cert_file: /etc/crowdsec/ssl/cert.pem
 #      key_file: /etc/crowdsec/ssl/key.pem
+{% else %}
+    enable: false
 {% endif %}
 {% if cs_prometheus_enabled %}
 prometheus:
