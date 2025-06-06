@@ -1,9 +1,21 @@
 ---
+- name: Find agent hosts in ansible
+  set_fact:
+    cs_agent_hosts: "{{ agent_hosts | default([]) + [item] }}"
+  loop: "{{ groups['all'] }}"
+  when: hostvars[item].cs_lapi_agent | default(false) | bool
+
+- name: Show agent hosts
+  debug:
+    var: cs_agent_hosts
+
 - name: Crowdsec - cscli machines add cs_agents on server
   command:
-    cmd: "{{ cs_exec_insert }}cscli machines add {{ inventory_hostname }} -p {{ (inventory_hostname + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} --force"
+    cmd: "{{ cs_exec_insert }}cscli machines add {{ item }} -p {{ (inventory_hostname + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} --force"
+  loop: "{{ cs_agent_hosts }}"
   when:
-    - cs_lapi_agent
+    - cs_lapi_server
+    - cs_agent_hosts|length > 0
 
 - name: Find bouncer hosts in ansible
   set_fact:
