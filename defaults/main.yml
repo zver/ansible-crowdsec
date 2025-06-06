@@ -14,9 +14,9 @@ cs_docker_install_dir: '/opt/crowdsec'
 cs_enabled: true
 
 # What part crowdsec for installation?
-cs_firewall_bouncer: true
+cs_firewall_bouncer: false
 cs_lapi_server: false
-cs_lapi_agent: true
+cs_lapi_agent: false
 
 ### Central API
 cs_central_api_enabled: false
