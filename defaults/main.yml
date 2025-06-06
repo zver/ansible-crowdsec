@@ -64,7 +64,7 @@ cs_parsers_mywhitelists_cidr: []
 ## LAPI server
 crowdsec_lapi_listen: 127.0.0.1 # LAPI server interface for listen
 crowdsec_lapi_port: 8778
-crowdsec_lapi_ip: 127.0.0.1 # LAPI server interface for make requests
+crowdsec_lapi_ip: 127.0.0.1 # LAPI IP for make requests
 
 ### Database settings
 crowdsec_lapi_db: sqlite # Use mysql or psql or sqlite
