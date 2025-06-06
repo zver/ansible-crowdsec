@@ -40,6 +40,9 @@ db_config:
   host: {{ crowdsec_psql_host }}
   port: {{ crowdsec_psql_port }}
 {% endif %}
+{% else %}
+  type: sqlite
+  db_path: {{ crowdsec_sqlite_db_path }} 
 {% endif %}
   flush:
     max_items: 5000
