@@ -61,6 +61,16 @@
     - "'crowdsecurity/whitelists' in cs_parsers_list"
     - cs_parsers_mywhitelists_ip|length > 0 or cs_parsers_mywhitelists_cidr|length > 0
 
+- name: Crowdsec - template simulation.yaml
+  template:
+    src: "{{ cs_template_dir }}simulation.yaml.j2"
+    dest: "{{ cs_config_dir }}simulation.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - cs_lapi_agent
+
 - name: Start docker container for use cscli in docker
   service:
     name: crowdsec-docker
