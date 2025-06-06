@@ -6,7 +6,8 @@
     mode: '0755'
     recurse: yes
   loop:
-    - etc_crowdsec
+    - etc_crowdsec/hub
+    - etc_crowdsec/notifications
     - var_lib_crowdsec_data
 
 - name: Crowdsec - docker - docker-compose.yml
