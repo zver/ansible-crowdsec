@@ -48,11 +48,9 @@ plugin_config:
   user: nobody # plugin process would be ran on behalf of this user
   group: nogroup # plugin process would be ran on behalf of this group
 api:
-{% if cs_lapi_agent %}
   client:
     insecure_skip_verify: false
     credentials_path: /etc/crowdsec/local_api_credentials.yaml
-{% endif %}
 {% if cs_lapi_server %}
   server:
     log_level: info
