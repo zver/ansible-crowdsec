@@ -1,7 +1,7 @@
 ---
 services:  
   crowdsec:
-    image: crowdsecurity/crowdsec
+    image: crowdsecurity/crowdsec:{{ cs_docker_image_tag }}
     container_name: crowdsec
     restart: always
     networks:
