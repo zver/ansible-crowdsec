@@ -8,7 +8,7 @@
   loop:
     - etc_crowdsec/hub
     - etc_crowdsec/notifications
-    - etc_crowdsec/parsers
+    - etc_crowdsec/parsers/s02-enrich
     - var_lib_crowdsec_data
 
 - name: Crowdsec - docker - docker-compose.yml
