@@ -49,7 +49,7 @@ ansible 'cs_agents' -m shell -a "docker exec crowdsec cscli parsers remove crowd
 ansible 'cs_server' -m shell -a "systemctl restart crowdsec-docker"
 
 ## Register agents and bouncers to lapi server
-
+The role automatically detects lists of bouncers and agents and registers them in LAPI crowdsec server.
 
 ## Use lapi server with external MySQL database
 
