@@ -16,17 +16,23 @@ services:
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
 {% if cs_collections_list | default([]) %}
-      COLLECTIONS: {{ cs_collections_list | join(' ') }}{% endif %}
+      COLLECTIONS: {{ cs_collections_list | join(' ') }}
+{% endif %}
 {% if cs_scenarios_list | default([]) %}
-      SCENARIOS: {{ cs_scenarios_list | join(' ') }}{% endif %}
+      SCENARIOS: {{ cs_scenarios_list | join(' ') }}
+{% endif %}
 {% if cs_parsers_list | default([]) %}
-      PARSERS: {{ cs_parsers_list | join(' ') }}{% endif %}
+      PARSERS: {{ cs_parsers_list | join(' ') }}
+{% endif %}
 {% if cs_postoverflows_list | default([]) %}
-      POSTOVERFLOWS: {{ cs_postoverflows_list | join(' ') }}{% endif %}
+      POSTOVERFLOWS: {{ cs_postoverflows_list | join(' ') }}
+{% endif %}
 {% if not cs_central_api_enabled %}
-      DISABLE_ONLINE_API: true{% endif %}
+      DISABLE_ONLINE_API: true
+{% endif %}
 {% if not cs_lapi_server %}
-      DISABLE_LOCAL_API: true{% endif %}
+      DISABLE_LOCAL_API: true
+{% endif %}
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
