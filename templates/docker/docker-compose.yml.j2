@@ -9,9 +9,11 @@ services:
 
     ports:
 {% if cs_lapi_server %}
-      - "{{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}:{{ crowdsec_lapi_port }}"{% endif %}
+      - "{{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}:{{ crowdsec_lapi_port }}"
+{% endif %}
 {% if cs_prometheus_enabled %}
-      - "{{ cs_prometheus_listen_addr }}:{{ cs_prometheus_listen_port }}:{{ cs_prometheus_listen_port }}"{% endif %}
+      - "{{ cs_prometheus_listen_addr }}:{{ cs_prometheus_listen_port }}:{{ cs_prometheus_listen_port }}"
+{% endif %}
 
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
