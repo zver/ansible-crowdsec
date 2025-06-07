@@ -9,7 +9,7 @@
 # Also see crowdsec_lapi_db for direct installation below.
 cs_install_type: 'direct'
 cs_docker_install_dir: '/opt/crowdsec'
-cs_docker_image_tag: v1.6.8
+cs_docker_image_tag: v1.6.9-rc2
 
 # Enable and start crowdsec service (lapi and agent)?
 cs_enabled: true
