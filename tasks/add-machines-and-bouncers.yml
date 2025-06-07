@@ -1,4 +1,21 @@
 ---
+- name: Start docker container for use cscli in docker
+  service:
+    name: crowdsec-docker
+    state: restarted
+  when:
+    - cs_install_type == 'docker'
+
+- name: Wait for docker container
+  command: docker exec crowdsec true
+  changed_when: false
+  register: cmd_output
+  until: cmd_output.rc == 0
+  retries: 10
+  delay: 5
+  when:
+    - cs_install_type == 'docker'
+
 - name: Find agent hosts in ansible
   set_fact:
     cs_agent_hosts: "{{ agent_hosts | default([]) + [item] }}"
