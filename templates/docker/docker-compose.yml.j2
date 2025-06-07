@@ -8,31 +8,31 @@ services:
       crowdsec:
 
     ports:
-{%- if cs_lapi_server %}
+{% if cs_lapi_server %}
       - "{{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}:{{ crowdsec_lapi_port }}"{% endif %}
-{%- if cs_prometheus_enabled %}
+{% if cs_prometheus_enabled %}
       - "{{ cs_prometheus_listen_addr }}:{{ cs_prometheus_listen_port }}:{{ cs_prometheus_listen_port }}"{% endif %}
 
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
-{%- if cs_collections_list | default([]) %}
+{% if cs_collections_list | default([]) %}
       COLLECTIONS: {{ cs_collections_list | join(' ') }}{% endif %}
-{%- if cs_scenarios_list | default([]) %}
+{% if cs_scenarios_list | default([]) %}
       SCENARIOS: {{ cs_scenarios_list | join(' ') }}{% endif %}
-{%- if cs_parsers_list | default([]) %}
+{% if cs_parsers_list | default([]) %}
       PARSERS: {{ cs_parsers_list | join(' ') }}{% endif %}
-{%- if cs_postoverflows_list | default([]) %}
+{% if cs_postoverflows_list | default([]) %}
       POSTOVERFLOWS: {{ cs_postoverflows_list | join(' ') }}{% endif %}
-{%- if not cs_central_api_enabled %}
+{% if not cs_central_api_enabled %}
       DISABLE_ONLINE_API: true{% endif %}
-{%- if not cs_lapi_server %}
+{% if not cs_lapi_server %}
       DISABLE_LOCAL_API: true{% endif %}
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/var_lib_crowdsec_data:/var/lib/crowdsec/data/
       - ./volumes/etc_crowdsec:/etc/crowdsec/
-{%- if cs_lapi_agent %}
+{% if cs_lapi_agent %}
       - /var/log/auth.log:/var/log/auth.log:ro
       - /var/log/syslog:/var/log/syslog:ro
       - /var/log/journal:/run/log/journal:ro
@@ -68,7 +68,7 @@ services:
     read_only: true
     tmpfs:
       - /run
-{%- endif %}
+{% endif %}
 
 networks:
   crowdsec:
