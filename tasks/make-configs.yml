@@ -71,34 +71,19 @@
   when:
     - cs_lapi_agent
 
-- name: Start docker container for use cscli in docker
-  service:
-    name: crowdsec-docker
-    state: started
-  when:
-    - cs_install_type == 'docker'
-
-- name: Wait for docker container
-  command: docker exec crowdsec true
-  changed_when: false
-  register: cmd_output
-  until: cmd_output.rc == 0
-  retries: 10
-  delay: 5
-  when:
-    - cs_install_type == 'docker'
-
 # Update / upgrade
 - name: Hub update
   command:
     cmd: "{{ cs_exec_insert }}cscli hub update"
   changed_when: false
+  when: cs_install_type == 'direct'
 
 - name: Hub upgrade
   command:
     cmd: "{{ cs_exec_insert }}cscli hub upgrade"
   register: hub_upgrade_result
   changed_when: false
+  when: cs_install_type == 'direct'
 
 # collections
 - name: Crowdsec - install collections (use force to install collections with deleted scenarios)
@@ -107,7 +92,10 @@
   with_items: "{{ cs_collections_list }}"
   register: collections_install_result
   changed_when: "'overwrite' not in collections_install_result.stderr"
-  when: cs_collections_list | length > 0
+  when:
+    - cs_collections_list | length > 0
+    - cs_install_type == 'direct'
+
 
 - name: Crowdsec - remove collections
   command:
@@ -115,7 +103,9 @@
   with_items: "{{ cs_collections_remove_list }}"
   register: collections_remove_result
   changed_when: "'sudo systemctl reload crowdsec' in collections_remove_result.stderr"
-  when: cs_collections_remove_list | length > 0
+  when:
+    - cs_collections_remove_list | length > 0
+    - cs_install_type == 'direct'
 
 # scenarios
 - name: Crowdsec - install scenarios
@@ -124,7 +114,9 @@
   with_items: "{{ cs_scenarios_list }}"
   register: scenarios_install_result
   changed_when: "'overwrite' not in scenarios_install_result.stderr"
-  when: cs_scenarios_list | length > 0
+  when:
+    - cs_scenarios_list | length > 0
+    - cs_install_type == 'direct'
 
 - name: Crowdsec - remove scenarios  (use force to delete scenarios included in collections)
   command:
@@ -132,7 +124,9 @@
   with_items: "{{ cs_scenarios_remove_list }}"
   register: scenarios_remove_result
   changed_when: "'sudo systemctl reload crowdsec' in scenarios_remove_result.stderr"
-  when: cs_scenarios_remove_list | length > 0
+  when:
+    - cs_scenarios_remove_list | length > 0
+    - cs_install_type == 'direct'
 
 # parsers
 - name: Crowdsec - install parsers
@@ -141,7 +135,9 @@
   with_items: "{{ cs_parsers_list }}"
   register: parsers_install_result
   changed_when: "'overwrite' not in parsers_install_result.stderr"
-  when: cs_parsers_list | length > 0
+  when:
+    - cs_parsers_list | length > 0
+    - cs_install_type == 'direct'
 
 - name: Crowdsec - remove parsers
   command:
@@ -149,7 +145,9 @@
   with_items: "{{ cs_parsers_remove_list }}"
   register: parsers_remove_result
   changed_when: "'sudo systemctl reload crowdsec' in parsers_remove_result.stderr"
-  when: cs_parsers_remove_list | length > 0
+  when:
+    - cs_parsers_remove_list | length > 0
+    - cs_install_type == 'direct'
 
 # postoverflows
 - name: Crowdsec - install postoverflows
@@ -158,7 +156,9 @@
   with_items: "{{ cs_postoverflows_list }}"
   register: postoverflows_install_result
   changed_when: "'overwrite' not in postoverflows_install_result.stderr"
-  when: cs_postoverflows_list | length > 0
+  when:
+    - cs_postoverflows_list | length > 0
+    - cs_install_type == 'direct'
 
 - name: Crowdsec - remove postoverflows
   command:
@@ -166,10 +166,13 @@
   with_items: "{{ cs_postoverflows_remove_list }}"
   register: postoverflows_remove_result
   changed_when: "'sudo systemctl reload crowdsec' in postoverflows_remove_result.stderr"
-  when: cs_postoverflows_remove_list | length > 0
+  when:
+    - cs_postoverflows_remove_list | length > 0
+    - cs_install_type == 'direct'
 
 - name: Crowdsec - cscli bash completion
   ansible.builtin.shell: "{{ cs_exec_insert }}cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
   register: bash_completion_result
   changed_when: "'# bash completion for' not in bash_completion_result.stdout"
   failed_when: "'Error' in bash_completion_result.stderr"
+  when: cs_install_type == 'direct'
