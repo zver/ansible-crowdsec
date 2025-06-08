@@ -7,16 +7,25 @@ labels:
 ---
 filenames:
   - /var/log/syslog
+{% if cs_install_type == 'docker' %}
+polling: true
+{% endif %}
 labels:
   type: syslog
 ---
 filenames:
   - /var/log/auth.log
+{% if cs_install_type == 'docker' %}
+polling: true
+{% endif %}
 labels:
   type: syslog
 ---
 filenames:
   - /var/log/openvpn.log
+{% if cs_install_type == 'docker' %}
+polling: true
+{% endif %}
 labels:
   type: syslog
 ---
