@@ -41,9 +41,9 @@ services:
       - ./volumes/var_lib_crowdsec_data:/var/lib/crowdsec/data/
       - ./volumes/etc_crowdsec:/etc/crowdsec/
 {% if cs_lapi_agent %}
-      - /var/log/auth.log:/var/log/auth.log
-      - /var/log/syslog:/var/log/syslog
-      - /var/log/journal:/run/log/journal
+      - /var/log/auth.log:/var/log/auth.log:ro
+      - /var/log/syslog:/var/log/syslog:ro
+      - /var/log/journal:/run/log/journal:ro
   socket-proxy:
     networks:
       crowdsec:
