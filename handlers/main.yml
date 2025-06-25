@@ -20,4 +20,4 @@
 - name: Reload systemd
   shell: systemctl daemon-reload
   register: systemctl_reload_status
-  failed_when: systemctl_reload_status != 0
+  failed_when: systemctl_reload_status.rc != 0
