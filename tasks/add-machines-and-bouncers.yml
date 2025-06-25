@@ -44,12 +44,21 @@
   debug:
     var: cs_bouncer_hosts
 
+- name: Delete Crowdsec bouncers
+  command:
+    cmd: "{{ cs_exec_insert }}cscli bouncers delete {{ item }}"
+  loop: "{{ cs_bouncer_hosts }}"
+  register: cscli_command
+  ignore_errors: true
+  when:
+    - cs_lapi_server
+    - cs_bouncer_hosts|length > 0
+
 - name: Add Crowdsec bouncers
   command:
     cmd: "{{ cs_exec_insert }}cscli bouncers add {{ item }} -k {{ (item + cs_bouncer_secret) | hash('sha256') | truncate(32, end='') }}"
   loop: "{{ cs_bouncer_hosts }}"
   register: cscli_command
-  ignore_errors: true
   when:
     - cs_lapi_server
     - cs_bouncer_hosts|length > 0
