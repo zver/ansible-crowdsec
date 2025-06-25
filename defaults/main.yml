@@ -10,7 +10,7 @@
 cs_install_type: 'direct'
 
 # Simulation mode?
-cs_simulation: true
+cs_simulation: 'true'
 
 # Docker params
 cs_docker_install_dir: '/opt/crowdsec'
