@@ -8,6 +8,11 @@
 # a container doesn't make sense.
 # Also see crowdsec_lapi_db for direct installation below.
 cs_install_type: 'direct'
+
+# Simulation mode?
+cs_simulation: true
+
+# Docker params
 cs_docker_install_dir: '/opt/crowdsec'
 cs_docker_image_tag: v1.6.9-rc2
 
