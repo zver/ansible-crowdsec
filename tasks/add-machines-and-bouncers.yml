@@ -18,7 +18,7 @@
 
 - name: Find agent hosts in ansible
   set_fact:
-    cs_agent_hosts: "{{ agent_hosts | default([]) + [item] }}"
+    cs_agent_hosts: "{{ cs_agent_hosts | default([]) + [item] }}"
   loop: "{{ groups['all'] }}"
   when: hostvars[item].cs_lapi_agent | default(false) | bool
 
