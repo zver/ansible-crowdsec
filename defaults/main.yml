@@ -17,7 +17,7 @@ cs_docker_install_dir: '/opt/crowdsec'
 cs_docker_image_tag: v1.6.9
 cs_docker_agent_volumes:
   - /var/log:/var/log-host:ro
-  - /var/log/journal:/run/log/journal:ro
+#  - /var/log/journal:/run/log/journal:ro
 
 # Enable and start crowdsec service (lapi and agent)?
 cs_enabled: true
