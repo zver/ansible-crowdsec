@@ -36,7 +36,7 @@
 
 - name: Find bouncer hosts in ansible
   set_fact:
-    cs_bouncer_hosts: "{{ bouncer_hosts | default([]) + [item] }}"
+    cs_bouncer_hosts: "{{ cs_bouncer_hosts | default([]) + [item] }}"
   loop: "{{ groups['all'] }}"
   when: hostvars[item].cs_firewall_bouncer | default(false) | bool
 
