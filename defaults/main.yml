@@ -14,7 +14,10 @@ cs_simulation: 'true'
 
 # Docker params
 cs_docker_install_dir: '/opt/crowdsec'
-cs_docker_image_tag: v1.6.9-rc2
+cs_docker_image_tag: v1.6.9
+cs_docker_agent_volumes:
+  - /var/log:/var/log-host:ro
+  - /var/log/journal:/run/log/journal:ro
 
 # Enable and start crowdsec service (lapi and agent)?
 cs_enabled: true
@@ -33,8 +36,10 @@ cs_central_api_password: ''
 # Base template dir. You can use it for store your custom
 # templates.
 cs_template_dir: ''
-# You can specify acquis.yaml template file for each host our group
-cs_template_acquis: 'acquis.yaml.j2'
+
+# You can specify acquis template names
+cs_acquis_templates:
+  - ssh
 
 ### Secret strings for generate keys
 # cs_agent_secret: 'FIXME.SETUP.STRONG.AGENT.SECRET'

@@ -39,13 +39,14 @@
   when:
     - cs_lapi_agent
 
-- name: Crowdsec - template acquis.yaml
+- name: Crowdsec - templates for acquis.d
   template:
-    src: "{{ cs_template_dir }}{{ cs_template_acquis }}"
-    dest: "{{ cs_config_dir }}acquis.yaml"
+    src: "{{ cs_template_dir }}acquis/{{ item }}.yaml.j2"
+    dest: "{{ cs_config_dir }}/acquis.d/{{ item }}.yaml"
     owner: root
     group: root
     mode: "0644"
+  loop: "{{ cs_acquis_templates }}"
   when:
     - cs_lapi_agent
 
