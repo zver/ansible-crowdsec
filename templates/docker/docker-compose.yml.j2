@@ -35,14 +35,19 @@ services:
 {% if not cs_lapi_server %}
       DISABLE_LOCAL_API: true
 {% endif %}
+{% if cs_lapi_agent %}
+      AGENT_USERNAME: {{ inventory_hostname }}
+      AGENT_PASSWORD: {{ (inventory_hostname + cs_agent_secret) | hash('sha256') | truncate(32, end='') }}
+{% endif %}
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/var_lib_crowdsec_data:/var/lib/crowdsec/data/
       - ./volumes/etc_crowdsec:/etc/crowdsec/
 {% if cs_lapi_agent %}
-      - /var/log:/var/log-host:ro
-      - /var/log/journal:/run/log/journal:ro
+{% for vol in cs_docker_agent_volumes %}
+      - {{ vol }}
+{% endfor %}
   socket-proxy:
     networks:
       crowdsec:
