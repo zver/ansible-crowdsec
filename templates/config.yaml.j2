@@ -14,7 +14,7 @@ config_paths:
   plugin_dir: /usr/lib/crowdsec/plugins/
 {% if cs_lapi_agent %}
 crowdsec_service:
-  acquisition_path: /etc/crowdsec/acquis.yaml
+  acquisition_dir: /etc/crowdsec/acquis.d
   parser_routines: 1
 {% endif %}
 cscli:
