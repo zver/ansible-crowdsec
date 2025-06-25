@@ -22,27 +22,27 @@ cscli:
 db_config:
   log_level: info
 {% if cs_lapi_server %}
-{% if crowdsec_lapi_db is defined and crowdsec_lapi_db == 'mysql' %}
+{% if cs_lapi_db is defined and cs_lapi_db == 'mysql' %}
   type: mysql
-  user: {{ crowdsec_mysql_db_user }}
-  password: "{{ crowdsec_mysql_db_password }}"
-  db_name: {{ crowdsec_mysql_db_name }}
-  host: {{ crowdsec_mysql_db_host }}
+  user: {{ cs_mysql_db_user }}
+  password: "{{ cs_mysql_db_password }}"
+  db_name: {{ cs_mysql_db_name }}
+  host: {{ cs_mysql_db_host }}
   port: 3306
-{% elif crowdsec_lapi_db is defined and crowdsec_lapi_db == 'sqlite' %}
+{% elif cs_lapi_db is defined and cs_lapi_db == 'sqlite' %}
   type: sqlite
-  db_path: {{ crowdsec_sqlite_db_path }} 
+  db_path: {{ cs_sqlite_db_path }} 
 {% else %}
   type:	postgres
-  user: {{ crowdsec_psql_db_user }}
-  password: "{{ crowdsec_psql_db_password }}"
-  db_name: {{ crowdsec_psql_db_name }}
-  host: {{ crowdsec_psql_host }}
-  port: {{ crowdsec_psql_port }}
+  user: {{ cs_psql_db_user }}
+  password: "{{ cs_psql_db_password }}"
+  db_name: {{ cs_psql_db_name }}
+  host: {{ cs_psql_host }}
+  port: {{ cs_psql_port }}
 {% endif %}
 {% else %}
   type: sqlite
-  db_path: {{ crowdsec_sqlite_db_path }} 
+  db_path: {{ cs_sqlite_db_path }} 
 {% endif %}
   flush:
     max_items: 5000
@@ -57,7 +57,7 @@ api:
   server:
 {% if cs_lapi_server %}
     log_level: info
-    listen_uri: {{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}
+    listen_uri: {{ cs_lapi_listen }}:{{ cs_lapi_port }}
     profiles_path: /etc/crowdsec/profiles.yaml
     console_path: /etc/crowdsec/console.yaml
 {% if cs_central_api_enabled %}

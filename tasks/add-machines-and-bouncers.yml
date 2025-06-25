@@ -28,7 +28,7 @@
 
 - name: Crowdsec - cscli machines add cs_agents on server
   command:
-    cmd: "{{ cs_exec_insert }}cscli machines add {{ item }} -p {{ (item + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ crowdsec_lapi_ip }}:{{ crowdsec_lapi_port }} --force"
+    cmd: "{{ cs_exec_insert }}cscli machines add {{ item }} -p {{ (item + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ cs_lapi_ip }}:{{ cs_lapi_port }} --force"
   loop: "{{ cs_agent_hosts }}"
   when:
     - cs_lapi_server

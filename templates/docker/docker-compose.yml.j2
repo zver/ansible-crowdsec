@@ -9,7 +9,7 @@ services:
 
     ports:
 {% if cs_lapi_server %}
-      - "{{ crowdsec_lapi_listen }}:{{ crowdsec_lapi_port }}:{{ crowdsec_lapi_port }}"
+      - "{{ cs_lapi_listen }}:{{ cs_lapi_port }}:{{ cs_lapi_port }}"
 {% endif %}
 {% if cs_prometheus_enabled %}
       - "{{ cs_prometheus_listen_addr }}:{{ cs_prometheus_listen_port }}:{{ cs_prometheus_listen_port }}"

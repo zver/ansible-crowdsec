@@ -54,7 +54,7 @@
   notify:
     - Restart crowdsec-firewall-bouncer
   when:
-    - crowdsec_lapi_ip is defined
+    - cs_lapi_ip is defined
     - cs_firewall_bouncer
 
 - name: Crowdsec-firewall-bouncer enable and start service

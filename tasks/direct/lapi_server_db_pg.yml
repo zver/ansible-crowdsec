@@ -16,23 +16,23 @@
 - name: Crowdsec - create crowdsec database
   postgresql_db:
     state: present
-    name: "{{ crowdsec_psql_db_name }}"
+    name: "{{ cs_psql_db_name }}"
   become: true
   become_user: postgres
 
 - name: Crowdsec - create crowdsec db userc
   postgresql_user:
     state: present
-    name: "{{ crowdsec_psql_db_user }}"
-    password: "{{ crowdsec_psql_db_password }}"
+    name: "{{ cs_psql_db_user }}"
+    password: "{{ cs_psql_db_password }}"
   become: true
   become_user: postgres
 
 - name: Crowdsec - grant db user access to app db
   postgresql_privs:
     type: database
-    database: "{{ crowdsec_psql_db_name }}"
-    roles: "{{ crowdsec_psql_db_user }}"
+    database: "{{ cs_psql_db_name }}"
+    roles: "{{ cs_psql_db_user }}"
     grant_option: no
     privs: all
   become: true

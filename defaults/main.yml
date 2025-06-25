@@ -6,7 +6,7 @@
 # 'docker' type supports install db in local files (sqlite)
 # and agent and lapi server parts. Installing bouncer into
 # a container doesn't make sense.
-# Also see crowdsec_lapi_db for direct installation below.
+# Also see cs_lapi_db for direct installation below.
 cs_install_type: 'direct'
 
 # Simulation mode?
@@ -68,23 +68,23 @@ cs_parsers_mywhitelists_ip: []
 cs_parsers_mywhitelists_cidr: []
 
 ## LAPI server
-crowdsec_lapi_listen: 127.0.0.1 # LAPI server interface for listen
-crowdsec_lapi_port: 8778
-crowdsec_lapi_ip: 127.0.0.1 # LAPI IP for make requests
+cs_lapi_listen: 127.0.0.1 # LAPI server interface for listen
+cs_lapi_port: 8778
+cs_lapi_ip: 127.0.0.1 # LAPI IP for make requests
 
 ### Database settings
-crowdsec_lapi_db: sqlite # Use mysql or psql or sqlite
-crowdsec_sqlite_db_path: /var/lib/crowdsec/data/crowdsec.db
+cs_lapi_db: sqlite # Use mysql or psql or sqlite
+cs_sqlite_db_path: /var/lib/crowdsec/data/crowdsec.db
 
 ## PgSQL
-# crowdsec_psql_host: 127.0.0.1
-# crowdsec_psql_port: 5432
-# crowdsec_psql_db_user: crowdsec
-# crowdsec_psql_db_password: ''
-# crowdsec_psql_db_name: crowdsec
+# cs_psql_host: 127.0.0.1
+# cs_psql_port: 5432
+# cs_psql_db_user: crowdsec
+# cs_psql_db_password: ''
+# cs_psql_db_name: crowdsec
 
 ## MySQL
-# crowdsec_mysql_db_user: crowdsec
-# crowdsec_mysql_db_password: ''
-# crowdsec_mysql_db_name: crowdsec
-# crowdsec_mysql_db_host: localhost
+# cs_mysql_db_user: crowdsec
+# cs_mysql_db_password: ''
+# cs_mysql_db_name: crowdsec
+# cs_mysql_db_host: localhost

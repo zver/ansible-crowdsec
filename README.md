@@ -38,7 +38,7 @@ variables can be host specific in group_vars/host.yml
       - crowdsecurity/apache2
       - crowdsecurity/iptables
     cs_prometheus_listen_addr: 0.0.0.0
-    crowdsec_lapi_listen: 0.0.0.0
+    cs_lapi_listen: 0.0.0.0
   roles:
     - zver.crowdsec
 ```
@@ -57,11 +57,11 @@ This role was originally created to use local psql database for lapi server. Now
 an external MySQL database with:
 
 ```
-crowdsec_lapi_db: mysql # Use mysql or psql
-crowdsec_mysql_db_user: crowdsec
-crowdsec_mysql_db_password: 'VeryLongPasswordPsqlChangeme2024!'
-crowdsec_mysql_db_name: crowdsec
-crowdsec_mysql_db_host: localhost
+cs_lapi_db: mysql # Use mysql or psql
+cs_mysql_db_user: crowdsec
+cs_mysql_db_password: 'VeryLongPasswordPsqlChangeme2024!'
+cs_mysql_db_name: crowdsec
+cs_mysql_db_host: localhost
 ```
 
 The role asumes the MySQL database is already configured and the access is granted.
