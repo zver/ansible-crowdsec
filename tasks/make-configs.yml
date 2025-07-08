@@ -8,6 +8,16 @@
     group: root
     mode: "0644"
 
+- name: Sync pattern files
+  synchronize:
+    src: files/patterns/
+    dest: "{{ cs_config_dir }}patterns/"
+    recursive: yes
+    delete: yes
+    rsync_opts:
+      - "--chmod=F644,D755"
+      - "--chown=root:root"
+
 - name: Crowdsec - template lapi profiles.yaml
   template:
     src: "{{ cs_template_dir }}profiles.yaml.j2"
