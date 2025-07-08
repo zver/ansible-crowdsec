@@ -43,6 +43,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./volumes/var_lib_crowdsec_data:/var/lib/crowdsec/data/
+      - ./volumes/etc_crowdsec/hub:/etc/crowdsec/hub
       - ./volumes/etc_crowdsec/config.yaml:/etc/crowdsec/config.yaml
       - ./volumes/etc_crowdsec/simulation.yaml:/etc/crowdsec/simulation.yaml
 {% if cs_lapi_server %}
