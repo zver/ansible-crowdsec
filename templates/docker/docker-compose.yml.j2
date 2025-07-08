@@ -47,9 +47,9 @@ services:
       - ./volumes/etc_crowdsec/simulation.yaml:/etc/crowdsec/simulation.yaml
 {% if cs_lapi_server %}
       - ./volumes/etc_crowdsec/profiles.yaml:/etc/crowdsec/profiles.yaml
-{% endif %}
-{% if cs_lapi_server and cs_central_api_enabled %}
+{% if cs_central_api_enabled %}
       - ./volumes/etc_crowdsec/online_api_credentials.yaml:/etc/crowdsec/online_api_credentials.yaml
+{% endif %}
 {% endif %}
 {% if cs_lapi_agent %}
       - ./volumes/etc_crowdsec/acquis.d:/etc/crowdsec/acquis.d
