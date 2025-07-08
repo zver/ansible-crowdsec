@@ -49,10 +49,18 @@
   when:
     - cs_lapi_agent
 
+- name: Crowdsec - acquis.d subdir
+  file:
+    path: "{{ cs_config_dir }}acquis.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Crowdsec - templates for acquis.d
   template:
     src: "{{ cs_template_dir }}acquis/{{ item }}.yaml.j2"
-    dest: "{{ cs_config_dir }}/acquis.d/{{ item }}.yaml"
+    dest: "{{ cs_config_dir }}acquis.d/{{ item }}.yaml"
     owner: root
     group: root
     mode: "0644"
