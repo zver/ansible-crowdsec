@@ -4,7 +4,9 @@
     name:
       - nftables
     state: present
-  when: cs_firewall_bouncer|bool
+  when:
+    - default_os_firewall == 'nftables'
+    - cs_firewall_bouncer|bool
 
 - name: Start nftables services
   service:
