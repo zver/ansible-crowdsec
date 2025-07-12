@@ -30,6 +30,7 @@
   command:
     cmd: "{{ cs_exec_insert }}cscli machines add {{ item }} -p {{ (item + cs_agent_secret) | hash('sha256') | truncate(32, end='') }} -u http://{{ cs_lapi_ip }}:{{ cs_lapi_port }} --force"
   loop: "{{ cs_agent_hosts }}"
+  changed_when: true
   when:
     - cs_lapi_server
     - cs_agent_hosts|length > 0
@@ -50,6 +51,7 @@
   loop: "{{ cs_bouncer_hosts }}"
   register: cscli_command
   ignore_errors: true
+  changed_when: true
   when:
     - cs_lapi_server
     - cs_bouncer_hosts|length > 0
@@ -59,6 +61,7 @@
     cmd: "{{ cs_exec_insert }}cscli bouncers add {{ item }} -k {{ (item + cs_bouncer_secret) | hash('sha256') | truncate(32, end='') }}"
   loop: "{{ cs_bouncer_hosts }}"
   register: cscli_command
+  changed_when: true
   when:
     - cs_lapi_server
     - cs_bouncer_hosts|length > 0
