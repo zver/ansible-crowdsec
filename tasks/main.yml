@@ -22,21 +22,24 @@
 
 - name: Crowdsec - direct installation
   include_tasks: direct/main.yml
-  when: cs_install_type == 'direct'
+  when:
+    - cs_install_type == 'direct'
+    - cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec - docker installation
   include_tasks: docker/main.yml
-  when: cs_install_type == 'docker'
+  when:
+    - cs_install_type == 'docker'
+    - cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec - make configs
   include_tasks: make-configs.yml
+  when: cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec - firewall bouncer installation (direct)
   include_tasks: firewall-bouncer.yml
-  when:
-    - cs_firewall_bouncer
+  when: cs_firewall_bouncer
 
 - name: Add machines and bouncers to lapi server
   include_tasks: add-machines-and-bouncers.yml
-  when:
-    - cs_lapi_server
+  when: cs_lapi_server

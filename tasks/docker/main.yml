@@ -11,7 +11,6 @@
     - etc_crowdsec/patterns
     - etc_crowdsec/parsers/s02-enrich
     - var_lib_crowdsec_data
-  when: cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec - docker - docker-compose.yml
   template:
@@ -19,7 +18,6 @@
     dest: "{{ cs_docker_install_dir }}/docker-compose.yml"
     mode: '0644'
   notify: Restart crowdsec-docker
-  when: cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec - docker - crowdsec-docker systemd config
   template:
@@ -27,24 +25,20 @@
     dest: "/etc/systemd/system/crowdsec-docker.service"
     mode: '0644'
   notify: 'Reload systemd'
-  when: cs_lapi_server or cs_lapi_agent
 
 - name: Crowdsec-docker enable and start service
   service:
     name: crowdsec-docker
     state: started
     enabled: true
-  when:
-    - cs_enabled
-    - cs_lapi_server or cs_lapi_agent
+  when: cs_enabled
 
 - name: Crowdsec disable and stop service
   service:
     name: crowdsec-docker
     state: stopped
     enabled: false
-  when:
-    - not cs_enabled
+  when: not cs_enabled
 
 - name: Uninstall crowdsec on host (direct)
   ansible.builtin.package:
