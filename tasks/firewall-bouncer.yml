@@ -14,7 +14,7 @@
           - apt-transport-https
         state: present
         update_cache: yes
-# Avoid run apt ansible module on very old debian. It is broken.
+      # Avoid run apt ansible module on very old debian. It is broken.
       when: >
         ansible_distribution != "Debian" or
         (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 11)
@@ -31,7 +31,7 @@
           {{ ansible_distribution_release | lower }} main
         filename: crowdsec_crowdsec
         state: present
-# Avoid run apt ansible module on very old debian. It is broken.
+      # Avoid run apt ansible module on very old debian. It is broken.
       when: >
         ansible_distribution != "Debian" or
         (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 11)
@@ -41,6 +41,18 @@
         name: crowdsec-firewall-bouncer-nftables
         update_cache: true
         state: present
+      # Avoid run apt ansible module on very old debian. It is broken.
+      when: >
+        ansible_distribution != "Debian" or
+        (ansible_distribution == "Debian" and ansible_distribution_major_version | int >= 11)
+
+    - name: Install repo for old Debian with fresh ansible version
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/crowdsec_crowdsec.list
+        content: "deb https://packagecloud.io/crowdsec/crowdsec/debian {{ ansible_distribution_release | lower }} main\n"
+        force: yes
+      when: ansible_distribution == "Debian" and ansible_distribution_major_version | int < 11
+
 
 # RedHAT
 - name: Crowdsec-firewall-bouncer-nftables
