@@ -52,3 +52,4 @@
     state: absent
   when:
     - cs_install_type != 'direct'
+    - ansible_facts.packages.crowdsec is defined
