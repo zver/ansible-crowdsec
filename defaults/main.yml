@@ -13,6 +13,7 @@ cs_install_type: 'direct'
 cs_simulation: 'true'
 
 # Docker params
+cs_docker_network: crowdsec
 cs_docker_install_dir: '/opt/crowdsec'
 cs_docker_image_tag: v1.6.9
 cs_docker_agent_volumes:
@@ -26,6 +27,9 @@ cs_enabled: true
 cs_firewall_bouncer: false
 cs_lapi_server: false
 cs_lapi_agent: false
+
+# Use docker socket proxy container for read docker logs?
+cs_lapi_agent_docker_socket_proxy: false
 
 ### Central API
 cs_central_api_enabled: false

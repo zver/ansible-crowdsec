@@ -5,7 +5,7 @@ services:
     container_name: crowdsec
     restart: always
     networks:
-      crowdsec:
+      {{ cs_docker_network }}:
 
     ports:
 {% if cs_lapi_server %}
@@ -16,7 +16,9 @@ services:
 {% endif %}
 
     environment:
+{% if cs_lapi_agent_docker_socket_proxy %}
       DOCKER_HOST: tcp://socket-proxy:2375
+{% endif %}
 {% if cs_collections_list | default([]) %}
       COLLECTIONS: {{ cs_collections_list | join(' ') }}
 {% endif %}
@@ -48,9 +50,10 @@ services:
 {% for vol in cs_docker_agent_volumes %}
       - {{ vol }}
 {% endfor %}
+{% if cs_lapi_agent_docker_socket_proxy %}
   socket-proxy:
     networks:
-      crowdsec:
+      {{ cs_docker_network }}:
     restart: always
     image: lscr.io/linuxserver/socket-proxy:latest
     container_name: socket-proxy
@@ -80,6 +83,7 @@ services:
     read_only: true
     tmpfs:
       - /run
+{% endif %}
 {% endif %}
 
 networks:
