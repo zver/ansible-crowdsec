@@ -14,6 +14,7 @@ cs_simulation: 'true'
 
 # Docker params
 cs_docker_network: crowdsec
+cs_docker_network_external: false
 cs_docker_install_dir: '/opt/crowdsec'
 cs_docker_image_tag: v1.6.9
 cs_docker_agent_volumes:
