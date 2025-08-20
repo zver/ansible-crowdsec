@@ -17,7 +17,7 @@ services:
 
     environment:
 {% if cs_lapi_agent_docker_socket_proxy %}
-      DOCKER_HOST: tcp://socket-proxy:2375
+      DOCKER_HOST: tcp://docker-socket-proxy:2375
 {% endif %}
 {% if cs_collections_list | default([]) %}
       COLLECTIONS: {{ cs_collections_list | join(' ') }}
@@ -51,12 +51,12 @@ services:
       - {{ vol }}
 {% endfor %}
 {% if cs_lapi_agent_docker_socket_proxy %}
-  socket-proxy:
+  docker-socket-proxy:
     networks:
       {{ cs_docker_network }}:
     restart: always
     image: lscr.io/linuxserver/socket-proxy:latest
-    container_name: socket-proxy
+    container_name: docker-socket-proxy
     environment:
       LOG_LEVEL: warning
       INFO: 1
