@@ -16,7 +16,7 @@ cs_simulation: 'true'
 cs_docker_network: crowdsec
 cs_docker_network_external: false
 cs_docker_install_dir: '/opt/crowdsec'
-cs_docker_image_tag: v1.6.9
+cs_docker_image_tag: v1.6.11
 cs_docker_agent_volumes:
   - /var/log:/var/log-host:ro
 #  - /var/log/journal:/run/log/journal:ro
