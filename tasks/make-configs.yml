@@ -49,6 +49,11 @@
   when:
     - cs_lapi_agent
 
+- name: Crowdsec - rm acquis.d subdir
+  file:
+    path: "{{ cs_config_dir }}acquis.d"
+    state: absent
+
 - name: Crowdsec - acquis.d subdir
   file:
     path: "{{ cs_config_dir }}acquis.d"
