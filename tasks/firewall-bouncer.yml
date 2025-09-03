@@ -79,11 +79,18 @@
 # Config
 - name: Configure crowdsec-firewall-bouncer when using lapi server (1/3)
   template:
-    src: "{{ cs_template_dir }}bouncer-firewall/crowdsec-firewall-bouncer.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - bouncer-firewall/crowdsec-firewall-bouncer.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   notify:
     - Restart crowdsec-firewall-bouncer
   when:

@@ -2,11 +2,18 @@
 ### Config files
 - name: Crowdsec - template configs.yaml
   template:
-    src: "{{ cs_template_dir }}config.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}config.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - config.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
 
 - name: Sync pattern files
   synchronize:
@@ -20,32 +27,53 @@
 
 - name: Crowdsec - template lapi profiles.yaml
   template:
-    src: "{{ cs_template_dir }}profiles.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}profiles.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - profiles.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   when:
     - cs_lapi_server
 
 - name: Crowdsec - template lapi online_api_credentials.yaml
   template:
-    src: "{{ cs_template_dir }}online_api_credentials.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}online_api_credentials.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - online_api_credentials.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   when:
     - cs_lapi_server
     - cs_central_api_enabled
 
 - name: Crowdsec - template local_api_credentials.yaml
   template:
-    src: "{{ cs_template_dir }}local_api_credentials.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}local_api_credentials.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - local_api_credentials.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   when:
     - cs_lapi_agent
 
@@ -64,22 +92,36 @@
 
 - name: Crowdsec - templates for acquis.d
   template:
-    src: "{{ cs_template_dir }}acquis/{{ item }}.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}acquis.d/{{ item }}.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - "acquis.d/{{ item }}.yaml.j2"
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   loop: "{{ cs_acquis_templates }}"
   when:
     - cs_lapi_agent
 
-- name: Crowdsec - add mywhitelists.yml
+- name: Crowdsec - add mywhitelists.yaml
   template:
-    src: "{{ cs_template_dir }}whitelists.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}parsers/s02-enrich/mywhitelists.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - mywhitelists.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
   when:
     - cs_lapi_agent
     - "'crowdsecurity/whitelists' in cs_parsers_list"
@@ -87,11 +129,18 @@
 
 - name: Crowdsec - template simulation.yaml
   template:
-    src: "{{ cs_template_dir }}simulation.yaml.j2"
+    src: "{{ lookup('first_found', params) }}"
     dest: "{{ cs_config_dir }}simulation.yaml"
     owner: root
     group: root
     mode: "0644"
+  vars:
+    params:
+      files:
+        - simulation.yaml.j2
+      paths:
+        - "{{ cs_template_dir }}"
+        - templates
 
 # Update / upgrade
 - name: Hub update
@@ -193,7 +242,7 @@
     - cs_install_type == 'direct'
 
 - name: Crowdsec - cscli bash completion
-  ansible.builtin.shell: "{{ cs_exec_insert }}cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
+  ansible.builtin.shell: "set -o pipefail && {{ cs_exec_insert }}cscli completion bash | sudo tee /etc/bash_completion.d/cscli"
   register: bash_completion_result
   changed_when: "'# bash completion for' not in bash_completion_result.stdout"
   failed_when: "'Error' in bash_completion_result.stderr"

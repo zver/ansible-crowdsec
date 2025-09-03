@@ -12,9 +12,9 @@
 - name: Crowdsec Add GPG apt Key
   apt_key:
     url: https://packagecloud.io/crowdsec/crowdsec/gpgkey
-    state: present
+    keyring: "/etc/apt/trusted.gpg.d/crowdsec.gpg"
 
 - name: Crowdsec Add Repository
   apt_repository:
-    repo: "deb https://packagecloud.io/crowdsec/crowdsec/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower}} main"
+    repo: "deb https://packagecloud.io/crowdsec/crowdsec/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} main"
     state: present
